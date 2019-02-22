@@ -1,4 +1,4 @@
-function onew = choseSubset(obj, subset)
+function onew = subset(obj, subset)
 
 %% Function that selects subset from object in the ZBraingrid class.
 %

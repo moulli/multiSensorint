@@ -1,4 +1,4 @@
-function cleanDuplicates(obj)
+function clean(obj)
 
 %% Function that cleans duplicates (if they exist) in the ZBraingrid class.
 %

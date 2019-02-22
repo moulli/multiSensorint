@@ -38,17 +38,8 @@ function onew = downIncrement(obj, new_increment)
     if all(new_increment <= obj.increment)
         error('Please provide increment lower than current increment.')
     else
-        onew = ZBraingrid(obj.method, new_increment);
+        onew = duplicate(obj);
     end
-    
-    
-    
-    %% Filling same properties:
-    
-    onew.names = obj.names;
-    onew.paths = obj.paths;
-    onew.comments = obj.comments;
-    onew.Zcorvect = obj.Zcorvect;
     
     
     

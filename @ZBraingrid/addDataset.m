@@ -10,7 +10,8 @@ function addDataset(obj, dataset_in)
 %
 %  --obj: references the object this methods is attached to.
 %  --dataset_in: structure containing fields 'name', 'path', 'comment'
-%    (optional), 'coordinates', and 'correlation'. 'comment' should state
+%    (optional), 'orientation' which should be [LR][AP][IS] and related to
+%    'coordinates', and 'correlation'. 'comment' should state
 %    the type of stimulus provided (e.g. vestibular + step, or thermotaxis
 %    + random pulses). 'coordinates' should have as many rows as there are
 %    neurons in the dataset, and 3 columns for the 3 dimensions.
@@ -23,8 +24,8 @@ function addDataset(obj, dataset_in)
     
     % Indication:
     tic
-    if size(obj.Zneurons, 4) > 1 || sum(obj.Zneuron_number(:)) ~= 0 
-        fprintf('\nLaunching function addDataset, attribute of ZBraingrid class. %.0f dataset(s) already added.\n', size(obj.Zneurons, 4));
+    if size(obj.Zneuron, 4) > 1 || sum(obj.Znumber(:)) ~= 0 
+        fprintf('\nLaunching function addDataset, attribute of ZBraingrid class. %.0f dataset(s) already added.\n', size(obj.Zneuron, 4));
     else
         fprintf('\nLaunching function addDataset, attribute of ZBraingrid class. First dataset.\n');
     end
@@ -32,6 +33,7 @@ function addDataset(obj, dataset_in)
     if ~isfield(dataset_in, 'name'); error('Please provide dataset name.'); end
     if ~isfield(dataset_in, 'path'); error('Please provide dataset path.'); end
     if ~isfield(dataset_in, 'comment'); dataset_in.comment = 'None'; end
+    if ~isfield(dataset_in, 'orientation'); error('Please provide orientation.'); end
     if ~isfield(dataset_in, 'coordinates'); error('Please provide coordinates for each neuron.'); end
     if ~isfield(dataset_in, 'correlation'); error('Please provide correlation for each neuron.'); end
     % Checking dimensions:
@@ -70,53 +72,59 @@ function addDataset(obj, dataset_in)
     obj.Zcorvect = [obj.Zcorvect; cor_in];
     
     
+    %% Dealing with the orientation:
+    
+    % Is orientation good:
+    if length(dataset_in.orientation) ~= 3 || regexp(dataset_in.orientation, '[LR][AP][IS]') ~= 1
+        error('Please provide orientation with standard [LR][AP][IS] notation.')
+    end
+    % Checking the dimensions it fits grid orientation:
+    fitgrid = diag(char(obj.orientation)' == char(dataset_in.orientation));
+    zbrainsize = [0.496, 1.122, 0.276];
+    coord_in = coord_in .* fitgrid' + (zbrainsize - coord_in) .* (fitgrid' == 0);
+    
+    
     
     %% Filling new data to Zneurons, Zcorrelations & Zneuron_number:
     
-    % Assigning new cell for Zneurons, new matrices for Zcorrelations & Zneuron_number, with new room:
-    lgrid_in = size(obj.Zneurons);
-    Zneurons_temp = cell(lgrid_in(1:3));
-    Zcorrelations_temp = zeros(lgrid_in(1:3));
-    Zneuron_number_temp = zeros(lgrid_in(1:3));
-    % Algorithm:
-    for ix = 1:lgrid_in(1)
-        for iy = 1:lgrid_in(2)
-            for iz = 1:lgrid_in(3)
-                % Getting neurons in this part of grid:
-                xtemp = (obj.xgrid(ix) <= coord_in(:, 1) & coord_in(:, 1) < obj.xgrid(ix+1));
-                ytemp = (obj.ygrid(iy) <= coord_in(:, 2) & coord_in(:, 2) < obj.ygrid(iy+1));
-                ztemp = (obj.zgrid(iz) <= coord_in(:, 3) & coord_in(:, 3) < obj.zgrid(iz+1));
-                Ttemp = find(xtemp & ytemp & ztemp);
-                % Now updating zbraingrid object:
-                if isempty(Ttemp)
-                    Zneurons_temp{ix, iy, iz} = [];
-                else
-                    Zneurons_temp{ix, iy, iz} = Ttemp;
-                end
-                cortemp = mean(cor_in(Ttemp));
-                if isnan(cortemp); cortemp = 0; end
-                Zcorrelations_temp(ix, iy, iz) = cortemp;
-                Zneuron_number_temp(ix, iy, iz) = length(Ttemp);
-            end
-        end
+    % Assigning new cell for Zneurons, new matrices for Zcorrelations & Zneuron_number, with new room:    
+    xZtemp = sum(coord_in(:, 1) >= obj.xgrid(1:end-1), 2);
+    yZtemp = sum(coord_in(:, 2) >= obj.ygrid(1:end-1), 2);
+    zZtemp = sum(coord_in(:, 3) >= obj.zgrid(1:end-1), 2);
+    indtemp = sub2ind(obj.gridsize(1:3), xZtemp, yZtemp, zZtemp);
+    unindextemp = unique(indtemp);
+    lunind = length(unindextemp);
+    [~, freqmode] = mode(indtemp);
+    Zindex_temp = prod(obj.gridsize) + unindextemp;
+    Znumber_temp = zeros(lunind, 1);
+    Zneuron_temp = zeros(lunind, freqmode);
+    Zcorrel_temp = zeros(lunind, 1);
+    
+    for i = 1:lunind
+        ftemp = find(indtemp' == unindextemp(i));
+        Znumber_temp(i) = length(ftemp);
+        Zneuron_temp(i, 1:length(ftemp)) = ftemp;
+        Zcorrel_temp(i) = mean(cor_in(ftemp));
         % Indication:
-        if mod(ix, 4) == 0
-            fprintf('For-loop %.2f %% completed in %.2f seconds.\n', [100*ix/lgrid_in(1), toc]);
+        if mod(i, floor(lunind/20)) == 0
+            fprintf('For-loop %.2f %% completed in %.2f seconds.\n', [100*i/lunind, toc]);
         end
-    end    
-    % Adding new dataset to object:
-    if size(obj.Zneurons, 4) > 1 || sum(obj.Zneuron_number(:)) ~= 0 
-        obj.Zneurons = cat(4, obj.Zneurons, Zneurons_temp);
-        obj.Zcorrelations = cat(4, obj.Zcorrelations, Zcorrelations_temp);
-        obj.Zneuron_number = cat(4, obj.Zneuron_number, Zneuron_number_temp);
-    else
-        obj.Zneurons = Zneurons_temp;
-        obj.Zcorrelations = Zcorrelations_temp;
-        obj.Zneuron_number = Zneuron_number_temp;
     end
+    
+    obj.Zindex = cat(1, obj.Zindex, Zindex_temp);
+    obj.Znumber = cat(1, obj.Znumber, Znumber_temp);
+    lzneu = size(obj.Zneuron, 2);
+    if lzneu > freqmode
+        Zneuron_temp = cat(2, Zneuron_temp, zeros(lunind, lzneu-freqmode));
+    elseif lzneu < freqmode
+        obj.Zneuron = cat(2, obj.Zneuron, zeros(size(obj.Zneuron, 1), freqmode-lzneu));
+    end
+    obj.Zneuron = cat(1, obj.Zneuron, Zneuron_temp);
+    obj.Zcorrel = cat(1, obj.Zcorrel, Zcorrel_temp);    
+    
     obj.gridsize(4) = obj.gridsize(4) + 1;
     % Indication:
     fprintf('Function addDataset ended in %.2f seconds.\n', toc);
-    
+
     
 end
