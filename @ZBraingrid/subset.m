@@ -30,7 +30,7 @@ function onew = subset(obj, subset)
         end
     end
     if isempty(keepsub)
-        error('Subset to plot is empty.')
+        error('Subset to get is empty.')
     end
     
     

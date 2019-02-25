@@ -22,15 +22,17 @@ function onew = duplicate(obj)
     %% Duplicate algorithm:
     
     % Creating new ZBraingrid object:
-    onew = ZBraingrid(obj.method, obj.increment, obj.orientation);
+    onew = ZBraingrid(obj.method, obj.gridsize(1:3), obj.orientation);
     % Filling information:
     onew.names = obj.names;
     onew.paths = obj.paths;
+    onew.gridsize = obj.gridsize;
     onew.comments = obj.comments;
+    onew.Zindex = obj.Zindex;
+    onew.Znumber = obj.Znumber;
+    onew.Zneuron = obj.Zneuron;
     onew.Zcorvect = obj.Zcorvect;
-    onew.Zneurons = obj.Zneurons;
-    onew.Zcorrelations = obj.Zcorrelations;
-    onew.Zneuron_number = obj.Zneuron_number;
+    onew.Zcorrel = obj.Zcorrel;
 
 
 end

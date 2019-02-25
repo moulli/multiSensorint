@@ -76,6 +76,7 @@ classdef ZBraingrid < handle
             elseif sum(floor(numgrid_in) ~= numgrid_in) ~= 0 || sum(numgrid_in <= 0) ~= 0
                 error('Grid size must be an array of strictly positive integers.')
             end
+            orientation_in = char(orientation_in);
             if length(orientation_in) ~= 3 || regexp(orientation_in, '[LR][AP][IS]') ~= 1
                 error('Please provide orientation with standard [LR][AP][IS] notation.')
             end
@@ -100,17 +101,14 @@ classdef ZBraingrid < handle
             % fprintf('ZBrain grid object created.\n');
         end
         
-        %% Plus operation:
-        onew = plus(o1, o2);
+        %% Basic operation:
+        onew = plus(o1, o2); % plus operation
+        lnew = length(obj); % length information
+        onew = abs(obj, premean); % absolute value
         
-        %% Indexing operation:
-        onew = subsref(obj, Sin);
-        
-        %% Absolut value:
-        onew = abs(obj, premean);
-        
-        %% Length:
-        lnew = length(obj);
+        %% Indexing operations:
+        onew = subsref(obj, Sin); % classic numeric indexing
+        onew = subset(obj, subset); % based on a comment keyword research
         
         %% Saving:
         onew = saveobj(obj);
@@ -133,11 +131,11 @@ classdef ZBraingrid < handle
         %% Create a new object with lower increment:
         onew = downIncrement(obj, new_increment);
         
-        %% Create subset object based on a comment keyword research:
-        onew = subset(obj, subset);
-        
         %% Duplicate ZBraingrid object:
         onew = duplicate(obj);
+        
+        %% Change orientation of object:
+        changeOrientation(obj, new_orientation)
         
     end
     

@@ -78,7 +78,7 @@ function addDataset(obj, dataset_in)
     if length(dataset_in.orientation) ~= 3 || regexp(dataset_in.orientation, '[LR][AP][IS]') ~= 1
         error('Please provide orientation with standard [LR][AP][IS] notation.')
     end
-    % Checking the dimensions it fits grid orientation:
+    % Checking it fits grid orientation, or turning it around:
     fitgrid = diag(char(obj.orientation)' == char(dataset_in.orientation));
     zbrainsize = [0.496, 1.122, 0.276];
     coord_in = coord_in .* fitgrid' + (zbrainsize - coord_in) .* (fitgrid' == 0);
@@ -87,7 +87,7 @@ function addDataset(obj, dataset_in)
     
     %% Filling new data to Zneurons, Zcorrelations & Zneuron_number:
     
-    % Assigning new cell for Zneurons, new matrices for Zcorrelations & Zneuron_number, with new room:    
+    % Computing matrices for Zindex, Znumber, Zneuron and Zcorrel:  
     xZtemp = sum(coord_in(:, 1) >= obj.xgrid(1:end-1), 2);
     yZtemp = sum(coord_in(:, 2) >= obj.ygrid(1:end-1), 2);
     zZtemp = sum(coord_in(:, 3) >= obj.zgrid(1:end-1), 2);
@@ -100,17 +100,19 @@ function addDataset(obj, dataset_in)
     Zneuron_temp = zeros(lunind, freqmode);
     Zcorrel_temp = zeros(lunind, 1);
     
+    % Filling matrices:
     for i = 1:lunind
         ftemp = find(indtemp' == unindextemp(i));
         Znumber_temp(i) = length(ftemp);
         Zneuron_temp(i, 1:length(ftemp)) = ftemp;
         Zcorrel_temp(i) = mean(cor_in(ftemp));
         % Indication:
-        if mod(i, floor(lunind/20)) == 0
+        if mod(i, floor(lunind/10)) == 0
             fprintf('For-loop %.2f %% completed in %.2f seconds.\n', [100*i/lunind, toc]);
         end
     end
     
+    % Concatening matrices:
     obj.Zindex = cat(1, obj.Zindex, Zindex_temp);
     obj.Znumber = cat(1, obj.Znumber, Znumber_temp);
     lzneu = size(obj.Zneuron, 2);
