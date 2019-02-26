@@ -119,23 +119,12 @@ classdef ZBraingrid < handle
         %% Plot all correlations, averaged over all datasets:
         plotAll(obj, varargin);
         
-        %% Plot a subset of the correlations:
-        plotSome(obj, subset, varargin);
-        
-        %% Flatten ZBraingrid object across all examples:
-        onew = flatten(obj, opt_comment);
-        
-        %% Clean duplicates, if the same dataset is present more than once:
-        clean(obj);
-        
-        %% Create a new object with lower increment:
-        onew = downIncrement(obj, new_increment);
-        
-        %% Duplicate ZBraingrid object:
-        onew = duplicate(obj);
-        
-        %% Change orientation of object:
-        changeOrientation(obj, new_orientation)
+        %% Higher operations on objects:
+        onew = duplicate(obj); % duplicate object
+        onew = clean(obj); % clean duplicates if same dataset is present more than once
+        changeOrientation(obj, new_orientation); % change object orientation
+        onew = flatten(obj, opt_comment); % flatten across all examples
+        onew = downIncrement(obj, new_increment); % new object with lower increment
         
     end
     
@@ -143,11 +132,9 @@ classdef ZBraingrid < handle
     % Static:
     methods (Static)
         
-        %% Getting rid of some low correlation neurons:
-        [Vrid, varargout] = static_ridNeurons(Vin, ridvalues, varargin);
-        
-        %% Arranging color for plotting:
-        Ccolor = static_corr2col(Ccorrelation, varargin);
+        %% Plotting static methods:
+        [Vrid, varargout] = static_ridNeurons(Vin, ridvalues, varargin); % getting rid of low correlation neurons
+        Ccolor = static_corr2col(Ccorrelation, varargin); % arranging color for plotting
         
         %% Loading:
         onew = loadobj(loaded);

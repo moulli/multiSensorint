@@ -1,4 +1,4 @@
-function clean(obj)
+function onew = clean(obj)
 
 %% Function that cleans duplicates (if they exist) in the ZBraingrid class.
 %
@@ -29,9 +29,13 @@ function clean(obj)
         similar = find(same_mat(i, :) == 1);
         for j = 1:length(similar)
             simtemp = similar(j);
-            if isequal(obj.paths(i), obj.paths(simtemp)) && isequal(obj.Zcorvect(i), obj.Zcorvect(simtemp)) && ...
-                    isequal(obj.Zneurons(i), obj.Zneurons(simtemp)) && isequal(obj.Zcorrelations(i), obj.Zcorrelations(simtemp)) && ...
-                    isequal(obj.Zneuron_number(i), obj.Zneuron_number(simtemp))
+            Sin1 = struct('type', '()', 'subs', {{i}});
+            otemp1 = subsref(obj, Sin1);
+            Sin2 = struct('type', '()', 'subs', {{simtemp}});
+            otemp2 = subsref(obj, Sin2);
+            if isequal(obj.paths(i), obj.paths(simtemp)) && isequal(otemp1.Zindex, otemp2.Zindex) && ...
+                    isequal(otemp1.Znumber, otemp2.Znumber) && isequal(otemp1.Zneuron, otemp2.Zneuron) && ...
+                    isequal(otemp1.Zcorvect, otemp2.Zcorvect) && isequal(otemp1.Zcorrel, otemp2.Zcorrel)
                 to_keep(i) = 0;
                 fprintf('Found a redundant dataset, between subsets %.0f and %.0f.\nDeleting subset %.0f.\n', [simtemp, i, i]);
                 break
@@ -48,15 +52,9 @@ function clean(obj)
     
     %% Removing duplicates:
     
-    to_keep = (to_keep == 1);
-    obj.names = obj.names(to_keep);
-    obj.paths = obj.paths(to_keep);
-    obj.comments = obj.comments(to_keep);
-    obj.Zcorvect = obj.Zcorvect(to_keep);
-    obj.Zneurons = obj.Zneurons(:, :, :, to_keep);
-    obj.Zcorrelations = obj.Zcorrelations(:, :, :, to_keep);
-    obj.Zneuron_number = obj.Zneuron_number(:, :, :, to_keep);
-    obj.gridsize = size(obj.Zcorrelations);
+    to_keep = to_keep' .* (1:length(to_keep)); 
+    Sin = struct('type', '()', 'subs', {{(to_keep(to_keep ~= 0))}});
+    onew = subsref(obj, Sin);
 
 
 end

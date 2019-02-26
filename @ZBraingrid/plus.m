@@ -37,6 +37,8 @@ function onew = plus(o1, o2)
     elseif lzneu1 < lzneu2
         o1temp = cat(2, [o1.Zneuron], zeros(size([o1.Zneuron], 1), lzneu2-lzneu1));
         onew.Zneuron = cat(1, o1temp, [o2.Zneuron]);
+    else
+        onew.Zneuron = cat(1, [o1.Zneuron], [o2.Zneuron]);
     end
     
     % Zcorvect and Zcorrel:

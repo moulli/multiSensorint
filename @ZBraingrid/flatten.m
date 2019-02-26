@@ -26,7 +26,7 @@ function onew = flatten(obj, opt_comment)
     %% Initialization:
     
     % Creating new ZBraingrid object:
-    onew = ZBraingrid(obj.method, obj.increment);
+    onew = duplicate(obj);
     % Adding information:
     onew.names = ["Flattened ZBraingrid object from " + string(length(obj.names)) + " datasets."];
     onew.paths = "No path for flattened ZBraingrid objects";
@@ -40,18 +40,30 @@ function onew = flatten(obj, opt_comment)
     
     
     
-    %% Computing Zcorrelations and Zneuron_number:
+    %% Getting back 4D matrices:
     
-    onew.Zcorrelations = mean(obj.Zcorrelations, 4);
-    onew.Zneuron_number = sum(obj.Zneuron_number, 4);
-    onew.gridsize = size(onew.Zcorrelations);
+    grid_temp = zeros(obj.gridsize);
+    Znumber_grid = grid_temp;
+    Znumber_grid(obj.Zindex) = obj.Znumber;
+    Zcorrel_grid = grid_temp;
+    Zcorrel_grid(obj.Zindex) = obj.Zcorrel;
     
     
     
-    %% Deleting Zcorvect and Zneurons:
+    %% Computing Zindex, Znumber and Zcorrel:
+    
+    Znumber_grid = sum(Znumber_grid, 4);
+    Zcorrel_grid = mean(Zcorrel_grid, 4);
+    onew.Zindex = find(Znumber_grid ~= 0);
+    onew.Znumber = Znumber_grid(onew.Zindex);
+    onew.Zcorrel = Zcorrel_grid(onew.Zindex);    
+    
+    
+    
+    %% Deleting Zcorvect and Zneuron:
     
     onew.Zcorvect = {};
-    onew.Zneurons = cell(size(onew.Zcorrelations));
+    onew.Zneuron = [];
 
 
 end

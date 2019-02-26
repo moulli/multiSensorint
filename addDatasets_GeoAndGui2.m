@@ -8,7 +8,7 @@ addpath(genpath('/home/ljp/Science/Hippolyte/multiSensorint'))
 
 method = 'Correlation analysis';
 zbrainsize = [0.496, 1.122, 0.276];
-increment = 0.01;
+increment = 0.005;
 gridsize = floor(zbrainsize ./ increment);
 orientation = 'RAS';
 zGe005 = ZBraingrid(method, gridsize, orientation);
@@ -80,7 +80,7 @@ clean(zGe005);
 
 guillaume = '/home/ljp/Science/Guillaume/Thermotaxis/Datasets';
 dirgui = dir(guillaume);
-for i = 1:7 %length(dirgui)
+for i = 1:length(dirgui)
     ntemp = dirgui(i).name;
     ptemp = fullfile(guillaume, ntemp);
     if regexp(ntemp, '201\d{5}_Run\d{2}_rp_Tset=\d{1,}.h5')
