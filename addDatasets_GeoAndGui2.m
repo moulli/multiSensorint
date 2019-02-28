@@ -8,7 +8,7 @@ addpath(genpath('/home/ljp/Science/Hippolyte/multiSensorint'))
 
 method = 'Correlation analysis';
 zbrainsize = [0.496, 1.122, 0.276];
-increment = 0.005;
+increment = 0.01;
 gridsize = floor(zbrainsize ./ increment);
 orientation = 'RAS';
 zGe005 = ZBraingrid(method, gridsize, orientation);

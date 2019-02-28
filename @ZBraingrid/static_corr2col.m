@@ -43,8 +43,14 @@ function Ccolor = static_corr2col(Ccorrelation, varargin)
     %% Defining Ccolor matrix:
    
     % Inverting values:
-    Ccolorn1 = 1 - Ccorrelation.*(Ccorrelation > 0);
-    Ccolorn2 = 1 + Ccorrelation.*(Ccorrelation < 0);
+    Ccolorn1 = 1 - Ccorrelation.*(Ccorrelation > 0); 
+        % Correcting for fullscale:
+        Ccolorn1(Ccolorn1 == 1) = -1;
+        Ccolorn1(Ccolorn1 == -1) = max(Ccolorn1);
+    Ccolorn2 = 1 + Ccorrelation.*(Ccorrelation < 0); 
+        % Correcting for fullscale:
+        Ccolorn2(Ccolorn2 == 1) = -1;
+        Ccolorn2(Ccolorn2 == -1) = max(Ccolorn2);
     % Autoscaling if required:
     if autoscale 
         if length(unique(Ccolorn1)) ~= 1

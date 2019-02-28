@@ -1,4 +1,4 @@
-function onew = downIncrement(obj, new_gridsize)
+function onew = downGrid(obj, new_gridsize)
 
 %% Function that created a new object with given increment in the ZBraingrid class.
 %
@@ -33,6 +33,8 @@ function onew = downIncrement(obj, new_gridsize)
     end
     if length(new_gridsize) ~= 3
         error('Please provide new gridsize as a scalar or as a 1x3 vector.')
+    elseif sum(floor(new_gridsize) ~= new_gridsize) ~= 0 || sum(new_gridsize <= 0) ~= 0
+        error('Grid size must be an array of strictly positive integers.')
     end
     new_gridsize = reshape(new_gridsize, 1, 3);
     % Checking new increment:
@@ -51,15 +53,6 @@ function onew = downIncrement(obj, new_gridsize)
     
     %% Filling computed properties:
     
-    % Finding which points from former grid belong to which in new grid:
-    xval = obj.xgrid(1:end-1) + obj.xgrid(2:end) / 2;
-    xtemp = sum(xval' >= onew.xgrid(1:end-1), 2);
-    yval = obj.ygrid(1:end-1) + obj.ygrid(2:end) / 2;
-    ytemp = sum(yval' >= onew.ygrid(1:end-1), 2);
-    zval = obj.zgrid(1:end-1) + obj.zgrid(2:end) / 2;
-    ztemp = sum(zval' >= onew.zgrid(1:end-1), 2);
-    indtemp = sub2ind(onew.gridsize(1:3), xtemp, ytemp, ztemp);
-    
     % Defining values:
     onew.Zindex = [];
     onew.Znumber = [];
@@ -67,8 +60,21 @@ function onew = downIncrement(obj, new_gridsize)
     onew.Zcorrel = [];
     
     % Looping over all datasets:
-    [~, ~, ~, dold] = ind2sub(obj.gridsize(1:3), obj.Zindex);
-    for k = 1:dold
+    % Getting values:
+        [xold, yold, zold, dold] = ind2sub(obj.gridsize(1:3), obj.Zindex);
+        xval = (obj.xgrid(1:end-1) + obj.xgrid(2:end)) / 2;
+        xold = xval(xold)';
+        yval = (obj.ygrid(1:end-1) + obj.ygrid(2:end)) / 2;
+        yold = yval(yold)';
+        zval = (obj.zgrid(1:end-1) + obj.zgrid(2:end)) / 2;
+        zold = zval(zold)';
+    % Obtaining new indexes:
+        xtemp = sum(xold >= onew.xgrid(1:end-1), 2);
+        ytemp = sum(yold >= onew.ygrid(1:end-1), 2);
+        ztemp = sum(zold >= onew.zgrid(1:end-1), 2);
+        indtemp = sub2ind(obj.gridsize, xtemp, ytemp, ztemp, dold);
+    % Adding indexes per dataset:
+    for k = 1:max(dold)
         indtemp_temp = indtemp(dold == k);
         unindextemp = unique(indtemp_temp);
         lunind = length(unindextemp);
@@ -81,7 +87,7 @@ function onew = downIncrement(obj, new_gridsize)
             ftemp = find(indtemp_temp' == unindextemp(i));
             Znumber_temp(i) = length(ftemp);
             Zneuron_temp(i, 1:length(ftemp)) = ftemp;
-            Zcorrel_temp(i) = mean(onew.Zcorvect{i}(ftemp));
+            Zcorrel_temp(i) = mean(onew.Zcorvect{k}(ftemp));
         end
         onew.Zindex = cat(1, onew.Zindex, Zindex_temp);
         onew.Znumber = cat(1, onew.Znumber, Znumber_temp);
@@ -93,9 +99,9 @@ function onew = downIncrement(obj, new_gridsize)
         end
         onew.Zneuron = cat(1, onew.Zneuron, Zneuron_temp);
         onew.Zcorrel = cat(1, onew.Zcorrel, Zcorrel_temp);
+%         % Indication:
+%         fprintf('For-loop %.0f completed in %.2f seconds.\n', [k, toc]);
     end
-    % Indication:
-    fprintf('For-loop %.0f completed in %.2f seconds.\n', [k, toc]);
 
 
 end

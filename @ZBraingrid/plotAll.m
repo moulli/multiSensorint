@@ -10,6 +10,15 @@ function plotAll(obj, varargin)
 %% Inputs:
 %
 %  --obj: references the object this methods is attached to.
+%  --varargin: optional inputs to plot method:
+%      -'rid': associated to a vector of 2 values gets rid of some neurons
+%       (cf. static_ridNeurons).
+%      -'color': can be associated to 'basic', 'autoscale' (default),
+%       'crop' or 'ridcrop'. Respectively, that means either the colors are
+%       those of the correlations, or they are scaled to range from -1 to 1
+%       
+%       Red is for positive correlation, blue for negative correlation.
+
 %  --varargin: three optional inputs can be added as inputs to the plotAll
 %    method. First 'ridvalues', associated to a vector of two values gets
 %    rid of some neurons (cf. static_ridNeurons). Second 'autoscale', allows

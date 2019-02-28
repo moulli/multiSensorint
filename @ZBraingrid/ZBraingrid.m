@@ -117,14 +117,14 @@ classdef ZBraingrid < handle
         addDataset(obj, dataset_in);
         
         %% Plot all correlations, averaged over all datasets:
-        plotAll(obj, varargin);
+        plot(obj, varargin);
         
         %% Higher operations on objects:
         onew = duplicate(obj); % duplicate object
         onew = clean(obj); % clean duplicates if same dataset is present more than once
         changeOrientation(obj, new_orientation); % change object orientation
         onew = flatten(obj, opt_comment); % flatten across all examples
-        onew = downIncrement(obj, new_increment); % new object with lower increment
+        onew = downGrid(obj, new_increment); % new object with lower increment
         
     end
     
