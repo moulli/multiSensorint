@@ -33,6 +33,12 @@ function onew = clean(obj)
             otemp1 = subsref(obj, Sin1);
             Sin2 = struct('type', '()', 'subs', {{simtemp}});
             otemp2 = subsref(obj, Sin2);
+%             isequal(obj.paths(i), obj.paths(simtemp))
+%             isequal(otemp1.Zindex, otemp2.Zindex), figure; subplot(2, 1, 1); plot(otemp1.Zindex); subplot(2, 1, 2); plot(otemp2.Zindex)
+%             isequal(otemp1.Znumber, otemp2.Znumber)
+%             isequal(otemp1.Zneuron, otemp2.Zneuron)
+%             isequal(otemp1.Zcorvect, otemp2.Zcorvect)
+%             isequal(otemp1.Zcorrel, otemp2.Zcorrel)
             if isequal(obj.paths(i), obj.paths(simtemp)) && isequal(otemp1.Zindex, otemp2.Zindex) && ...
                     isequal(otemp1.Znumber, otemp2.Znumber) && isequal(otemp1.Zneuron, otemp2.Zneuron) && ...
                     isequal(otemp1.Zcorvect, otemp2.Zcorvect) && isequal(otemp1.Zcorrel, otemp2.Zcorrel)

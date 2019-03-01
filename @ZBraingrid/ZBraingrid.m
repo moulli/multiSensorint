@@ -114,7 +114,7 @@ classdef ZBraingrid < handle
         onew = saveobj(obj);
         
         %% Add dataset to object:
-        addDataset(obj, dataset_in);
+        addDataset(obj, dataset_in, indic_in);
         
         %% Plot all correlations, averaged over all datasets:
         plot(obj, varargin);

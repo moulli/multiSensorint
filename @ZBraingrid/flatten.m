@@ -28,6 +28,7 @@ function onew = flatten(obj, opt_comment)
     % Creating new ZBraingrid object:
     onew = duplicate(obj);
     % Adding information:
+    onew.gridsize = [obj.gridsize(1:3), 1];
     onew.names = ["Flattened ZBraingrid object from " + string(length(obj.names)) + " datasets."];
     onew.paths = "No path for flattened ZBraingrid objects";
     if nargin == 2
@@ -56,7 +57,7 @@ function onew = flatten(obj, opt_comment)
     Zcorrel_grid = mean(Zcorrel_grid, 4);
     onew.Zindex = find(Znumber_grid ~= 0);
     onew.Znumber = Znumber_grid(onew.Zindex);
-    onew.Zcorrel = Zcorrel_grid(onew.Zindex);    
+    onew.Zcorrel = Zcorrel_grid(onew.Zindex);  
     
     
     

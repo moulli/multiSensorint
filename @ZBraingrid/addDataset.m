@@ -1,4 +1,4 @@
-function addDataset(obj, dataset_in)
+function addDataset(obj, dataset_in, indic_in)
 
 %% Function that adds information on new data in the ZBraingrid class.
 %
@@ -22,12 +22,23 @@ function addDataset(obj, dataset_in)
 
     %% Initialization:
     
+    % Indications or not:
+    if nargin == 3 || indic_in == "indications_off"
+        indic_in = 0;
+    elseif nargin == 3 
+        error('Please provide appropriate input arguments.')
+    else
+        indic_in = 1;
+    end
+    
     % Indication:
     tic
-    if size(obj.Zneuron, 4) > 1 || sum(obj.Znumber(:)) ~= 0 
-        fprintf('\nLaunching function addDataset, attribute of ZBraingrid class. %.0f dataset(s) already added.\n', size(obj.Zneuron, 4));
-    else
-        fprintf('\nLaunching function addDataset, attribute of ZBraingrid class. First dataset.\n');
+    if indic_in == 1
+        if size(obj.Zneuron, 4) > 1 || sum(obj.Znumber(:)) ~= 0 
+            fprintf('\nLaunching function addDataset, attribute of ZBraingrid class. %.0f dataset(s) already added.\n', size(obj.Zneuron, 4));
+        else
+            fprintf('\nLaunching function addDataset, attribute of ZBraingrid class. First dataset.\n');
+        end
     end
     % Checking entering structure fields:
     if ~isfield(dataset_in, 'name'); error('Please provide dataset name.'); end
@@ -49,27 +60,6 @@ function addDataset(obj, dataset_in)
     else 
         cor_in = reshape(cor_in, length(cor_in), 1);
     end
-    % Adding data to properties:
-    % Name:
-    if isempty(obj.names)
-        obj.names = {string(dataset_in.name)};
-    else
-        obj.names = [obj.names; string(dataset_in.name)];
-    end
-    % Path:
-    if isempty(obj.paths)
-        obj.paths = {string(dataset_in.path)};
-    else
-        obj.paths = [obj.paths; string(dataset_in.path)];
-    end
-    % Comment:
-    if isempty(obj.comments)
-        obj.comments = {string(dataset_in.comment)};
-    else
-        obj.comments = [obj.comments; string(dataset_in.comment)];
-    end
-    % Correlation vector:
-    obj.Zcorvect = [obj.Zcorvect; cor_in];
     
     
     %% Dealing with the orientation:
@@ -86,6 +76,11 @@ function addDataset(obj, dataset_in)
     
     
     %% Filling new data to Zneurons, Zcorrelations & Zneuron_number:
+    
+    % Getting rid of potential out of range coordinates (cf static_ridNeurons):
+    [~, coord_in, cor_in] = ZBraingrid.static_ridNeurons(coord_in(:, 1), [zbrainsize(1), 0], coord_in, cor_in);
+    [~, coord_in, cor_in] = ZBraingrid.static_ridNeurons(coord_in(:, 2), [zbrainsize(2), 0], coord_in, cor_in);
+    [~, coord_in, cor_in] = ZBraingrid.static_ridNeurons(coord_in(:, 3), [zbrainsize(3), 0], coord_in, cor_in);
     
     % Computing matrices for Zindex, Znumber, Zneuron and Zcorrel:  
     xZtemp = sum(coord_in(:, 1) >= obj.xgrid(1:end-1), 2);
@@ -107,10 +102,35 @@ function addDataset(obj, dataset_in)
         Zneuron_temp(i, 1:length(ftemp)) = ftemp;
         Zcorrel_temp(i) = mean(cor_in(ftemp));
         % Indication:
-        if mod(i, floor(lunind/10)) == 0
+        if mod(i, floor(lunind/10)) == 0 || indic_in == 1
             fprintf('For-loop %.2f %% completed in %.2f seconds.\n', [100*i/lunind, toc]);
         end
     end
+    
+    
+    
+    %% Adding data to properties:
+    
+    % Name:
+    if isempty(obj.names)
+        obj.names = {string(dataset_in.name)};
+    else
+        obj.names = [obj.names; string(dataset_in.name)];
+    end
+    % Path:
+    if isempty(obj.paths)
+        obj.paths = {string(dataset_in.path)};
+    else
+        obj.paths = [obj.paths; string(dataset_in.path)];
+    end
+    % Comment:
+    if isempty(obj.comments)
+        obj.comments = {string(dataset_in.comment)};
+    else
+        obj.comments = [obj.comments; string(dataset_in.comment)];
+    end
+    % Correlation vector:
+    obj.Zcorvect = [obj.Zcorvect; cor_in];
     
     % Concatening matrices:
     obj.Zindex = cat(1, obj.Zindex, Zindex_temp);
@@ -126,7 +146,9 @@ function addDataset(obj, dataset_in)
     
     obj.gridsize(4) = obj.gridsize(4) + 1;
     % Indication:
-    fprintf('Function addDataset ended in %.2f seconds.\n', toc);
+    if indic_in == 1
+        fprintf('Function addDataset ended in %.2f seconds.\n', toc);
+    end
 
     
 end

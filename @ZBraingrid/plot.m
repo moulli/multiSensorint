@@ -99,6 +99,10 @@ function plot(obj, varargin)
     Zcorrel_temp = zeros(obj.gridsize(1:3));
     Zcorrel_temp(Ztemp.Zindex) = Ztemp.Zcorrel;
     Zcorrel_temp = Zcorrel_temp(Zindex_temp);
+%     figure; subplot(4, 1, 1); plot(Zcorrel_temp, '.');
+%     subplot(4, 1, 2); plot(xmesh, '.')
+%     subplot(4, 1, 3); plot(ymesh, '.')
+%     subplot(4, 1, 4); plot(zmesh, '.')
     % Basic or autoscale:
     if colind == 1
         Ccolor = ZBraingrid.static_corr2col(Zcorrel_temp, 'autoscale', false);
