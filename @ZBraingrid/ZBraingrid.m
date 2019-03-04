@@ -14,24 +14,24 @@ classdef ZBraingrid < handle
     properties (SetAccess = private)
         
         %% Global information:
-        % Method employed, simple string:
+        % Method employed, simple string, and orientation:
         method
+        orientation
         % Names of the examples, paths and comments:
         names
         paths
         comments
         
         %% Grid:
-        % increment, size and (x, y, z)-grids:
+        % increment and size:
         increment
-        orientation
         gridsize
         
     end
     
     
     % Invisible:
-    properties (SetAccess = private)%, GetAccess = private)
+    properties (SetAccess = private, GetAccess = private)
         
         %% Grid:
         xgrid

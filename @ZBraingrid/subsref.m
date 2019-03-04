@@ -40,10 +40,13 @@ function onew = subsref(obj, Sin)
 %                 figure; plot(Zindex_temp(indkeep), '.')
             onew.Zindex = Zindex_temp(indkeep);
             onew.Znumber = obj.Znumber(indkeep);
-            Zneuron_temp = obj.Zneuron(indkeep);
-            neu_temp = (sum(Zneuron_temp) ~= 0);
-            onew.Zneuron = Zneuron_temp(:, neu_temp);
-            onew.Zcorvect = obj.Zcorvect(substemp);
+            % If flattened, skipping next part:
+            if ~isempty(obj.Zneuron)
+                Zneuron_temp = obj.Zneuron(indkeep);
+                neu_temp = (sum(Zneuron_temp) ~= 0);
+                onew.Zneuron = Zneuron_temp(:, neu_temp);
+                onew.Zcorvect = obj.Zcorvect(substemp);
+            end
             onew.Zcorrel = obj.Zcorrel(indkeep);
             switch length(Sin)
                 case 1

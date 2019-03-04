@@ -80,12 +80,12 @@ function onew = downGrid(obj, new_gridsize)
         stemp.name = obj.names{i};
         stemp.path = obj.paths{i};
         stemp.comment = obj.comments{i};
-        stemp.orientation = obj.orientation;
+        stemp.orientation = char(obj.orientation);
         stemp.correlation = obj.Zcorvect{i};
         dimtemp = (dold == i);
         stemp.coordinates = Mold(dimtemp, :);
-        size(stemp.correlation), size(stemp.coordinates)
-%         addDataset(onew, stemp, 'indications_off');
+%         size(stemp.correlation), size(stemp.coordinates)
+        addDataset(onew, stemp, 'indications_off');
     end
         
     

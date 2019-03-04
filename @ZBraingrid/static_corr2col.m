@@ -45,12 +45,16 @@ function Ccolor = static_corr2col(Ccorrelation, varargin)
     % Inverting values:
     Ccolorn1 = 1 - Ccorrelation.*(Ccorrelation > 0); 
         % Correcting for fullscale:
-        Ccolorn1(Ccolorn1 == 1) = -1;
-        Ccolorn1(Ccolorn1 == -1) = max(Ccolorn1);
+        if length(unique(Ccolorn1)) ~= 1
+            Ccolorn1(Ccolorn1 == 1) = -1;
+            Ccolorn1(Ccolorn1 == -1) = max(Ccolorn1);
+        end
     Ccolorn2 = 1 + Ccorrelation.*(Ccorrelation < 0); 
         % Correcting for fullscale:
-        Ccolorn2(Ccolorn2 == 1) = -1;
-        Ccolorn2(Ccolorn2 == -1) = max(Ccolorn2);
+        if length(unique(Ccolorn2)) ~= 1
+            Ccolorn2(Ccolorn2 == 1) = -1;
+            Ccolorn2(Ccolorn2 == -1) = max(Ccolorn2);
+        end
     % Autoscaling if required:
     if autoscale 
         if length(unique(Ccolorn1)) ~= 1

@@ -157,9 +157,13 @@ zgridGui05 = downGrid(zgridGui005, gridsize);
 
 %% Scrolling through Auditory files, to add to zgrid:
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% CAREFUL, PROBLEM WITH 2ND DATASET, NAN VALUES %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 auditory = '/home/ljp/Science/Hippolyte/auditory_h5/newHDF5_auditory';
 diraud = dir(auditory);
-for i = 1:length(diraud)
+for i = 4 %1:length(diraud)
     ntemp = diraud(i).name;
     ptemp = fullfile(auditory, ntemp);
     if regexp(ntemp, '201\d(-\d{2}){2}Run\d{2}_a.h5')

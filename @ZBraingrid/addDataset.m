@@ -23,12 +23,12 @@ function addDataset(obj, dataset_in, indic_in)
     %% Initialization:
     
     % Indications or not:
-    if nargin == 3 || indic_in == "indications_off"
+    if nargin == 2
+        indic_in = 1;
+    elseif nargin == 3 && indic_in == "indications_off"
         indic_in = 0;
     elseif nargin == 3 
         error('Please provide appropriate input arguments.')
-    else
-        indic_in = 1;
     end
     
     % Indication:
@@ -102,7 +102,7 @@ function addDataset(obj, dataset_in, indic_in)
         Zneuron_temp(i, 1:length(ftemp)) = ftemp;
         Zcorrel_temp(i) = mean(cor_in(ftemp));
         % Indication:
-        if mod(i, floor(lunind/10)) == 0 || indic_in == 1
+        if mod(i, floor(lunind/10)) == 0 && indic_in == 1
             fprintf('For-loop %.2f %% completed in %.2f seconds.\n', [100*i/lunind, toc]);
         end
     end

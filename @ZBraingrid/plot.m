@@ -123,7 +123,7 @@ function plot(obj, varargin)
     
     %% Plotting using a scatter3 plot:
     
-    figure
+    %figure % We want to be able to subplot this
     scatter3(g_coord(:, 1), g_coord(:, 2), g_coord(:, 3), msize, Ccolor, 'filled')
     axis equal
     grid on
