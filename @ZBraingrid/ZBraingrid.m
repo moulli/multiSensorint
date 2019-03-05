@@ -126,6 +126,11 @@ classdef ZBraingrid < handle
         onew = flatten(obj, opt_comment); % flatten across all examples
         onew = downGrid(obj, new_increment); % new object with lower increment
         
+        %% Analysis operations:
+        onew = normalize(obj); % normalize correlations
+        corAnalysis(obj, numbin); % correlation histogram for analysis
+        onew = keepPts(obj, numpts); % keeps gridpoints with highest correlation
+        
     end
     
     
