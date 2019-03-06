@@ -130,6 +130,7 @@ classdef ZBraingrid < handle
         onew = normalize(obj); % normalize correlations
         corAnalysis(obj, numbin); % correlation histogram for analysis
         onew = keepPts(obj, numpts); % keeps gridpoints with highest correlation
+        plotDFF(obj, pts, radius, stimpath); % plots mean dff for selected points
         
     end
     

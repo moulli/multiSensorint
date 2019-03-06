@@ -49,6 +49,7 @@ for i = 1:length(dirgeo)
         end
     end
 end
+zzz = zgridGeo005.Zneuron; zzz = zzz(:); zzz(zzz == 0) = []; length(zzz), sum(zgridGeo005.Znumber)
 
 
 
@@ -123,6 +124,7 @@ for i = 1:length(dirgui)
         end
     end
 end
+zzz = zgridGui005.Zneuron; zzz = zzz(:); zzz(zzz == 0) = []; length(zzz), sum(zgridGui005.Znumber)
 
 
 
@@ -163,7 +165,7 @@ zgridGui05 = downGrid(zgridGui005, gridsize);
 
 auditory = '/home/ljp/Science/Hippolyte/auditory_h5/newHDF5_auditory';
 diraud = dir(auditory);
-for i = 4 %1:length(diraud)
+for i = 1:length(diraud)
     ntemp = diraud(i).name;
     ptemp = fullfile(auditory, ntemp);
     if regexp(ntemp, '201\d(-\d{2}){2}Run\d{2}_a.h5')
@@ -192,7 +194,10 @@ for i = 4 %1:length(diraud)
         end
     end
 end
+zzz = zgridAud005.Zneuron; zzz = zzz(:); zzz(zzz == 0) = []; length(zzz), sum(zgridAud005.Znumber)
 
+%%%%%%%%%% Correcting problem:
+zgridAud005 = zgridAud005([1, 3, 4]);
 
 
 %% Cleaning duplicates if necessary (should not be):
