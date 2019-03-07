@@ -39,17 +39,17 @@ for i = 1:6
     title(ztot{i, 2}, 'Interpreter', 'latex')
 end
     
-% Plotting all correlation repartitions:
-for i = 1:6
-    figure
-    ntemp = length(ztot{i});
-    columns = ceil(ntemp/3);
-    for j = 1:ntemp
-        subplot(3, columns, j)
-        corAnalysis(ztot{i}(j))
-        title(ztot{i, 2}, 'Interpreter', 'latex')
-    end
-end
+% % Plotting all correlation repartitions:
+% for i = 1:6
+%     figure
+%     ntemp = length(ztot{i});
+%     columns = ceil(ntemp/3);
+%     for j = 1:ntemp
+%         subplot(3, columns, j)
+%         corAnalysis(ztot{i}(j))
+%         title(ztot{i, 2}, 'Interpreter', 'latex')
+%     end
+% end
 
 
 
