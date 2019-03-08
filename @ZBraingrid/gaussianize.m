@@ -28,9 +28,15 @@ function onew = gaussianize(obj, variance)
     % Convolving exponential kernel with correlation matrix:
     Zcorrel_temp = convn(Zcorrel_temp, kern, 'same');
     % Normalizing data:
-    mean_pre = mean(abs(obj.Zcorrel));
-    mean_post = mean(abs(Zcorrel_temp(obj.Zindex)));
-    Zcorrel_temp = (mean_pre / mean_post) .* Zcorrel_temp;
+    [~, ~, ~, dim] = ind2sub(obj.gridsize, obj.Zindex);
+    for i = 1:obj.gridsize(4)
+        mean_pre_t = sort(abs(obj.Zcorrel(i == dim)), 'descend');
+        mean_post_t = sort(abs(Zcorrel_temp(obj.Zindex(i == dim))), 'descend');
+        mean_pre = mean(mean_pre_t(1:round(0.1*length(mean_pre_t))));
+        mean_post = mean(mean_post_t(1:round(0.1*length(mean_post_t))));
+        %     mean_post = mean(mean_post_t);
+        Zcorrel_temp(:, :, :, i) = (mean_pre / mean_post) .* Zcorrel_temp(:, :, :, i);
+    end
     
     % Adding new values to onew:
     onew = duplicate(obj);
@@ -39,6 +45,6 @@ function onew = gaussianize(obj, variance)
     Znumber_temp = zeros(obj.gridsize);
     Znumber_temp(obj.Zindex) = obj.Znumber;
     onew.Znumber = Znumber_temp(onew.Zindex);
-    figure; subplot(2, 1, 1); plot(obj.Zcorrel, '.'); subplot(2, 1, 2); plot(Zcorrel_temp(obj.Zindex), '.')
+%     figure; subplot(2, 1, 1); plot(obj.Zcorrel, '.'); subplot(2, 1, 2); plot(Zcorrel_temp(obj.Zindex), '.')
             
 end

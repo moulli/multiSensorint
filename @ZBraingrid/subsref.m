@@ -42,7 +42,8 @@ function onew = subsref(obj, Sin)
             onew.Znumber = obj.Znumber(indkeep);
             % If flattened, skipping next part:
             if ~isempty(obj.Zneuron)
-                Zneuron_temp = obj.Zneuron(indkeep, :);
+                ind_neurons = indkeep(obj.Znumber ~= 0);
+                Zneuron_temp = obj.Zneuron(ind_neurons, :);
                 neu_temp = (sum(Zneuron_temp) ~= 0);
                 onew.Zneuron = Zneuron_temp(:, neu_temp);
                 onew.Zcorvect = obj.Zcorvect(substemp);
