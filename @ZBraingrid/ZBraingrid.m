@@ -62,8 +62,14 @@ classdef ZBraingrid < handle
         %% Constructor:
         function obj = ZBraingrid(method_in, numgrid_in, orientation_in) 
         % Constructor of class, fills method and creates grids.
+        % CAN ALSO PROVIDE AN ALREADY EXISTING ZBRAINGRID OBJECT, WHICH
+        % METHOD, GRIDSIZE AND ORIENTATION WILL BE PASSED ALONG
             % Checking input:
-            if nargin ~= 3
+            if nargin == 1 && class(method_in) == "ZBraingrid"
+                numgrid_in = method_in.gridsize(1:3);
+                orientation_in = method_in.orientation;
+                method_in = method_in.method;
+            elseif nargin ~= 3
                 error('Please provide method name, grid size and orientation.')
             end
             if ~isvector(numgrid_in)
@@ -101,6 +107,8 @@ classdef ZBraingrid < handle
             % fprintf('ZBrain grid object created.\n');
         end
         
+        
+        
         %% Basic operation:
         onew = plus(o1, o2); % plus operation
         lnew = length(obj); % length information
@@ -109,6 +117,7 @@ classdef ZBraingrid < handle
         %% Indexing operations:
         onew = subsref(obj, Sin); % classic numeric indexing
         onew = subset(obj, subset); % based on a comment keyword research
+        ind = end(obj, k, n); % defines 'end' operator for indexing
         
         %% Saving:
         onew = saveobj(obj);

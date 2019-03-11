@@ -31,13 +31,13 @@ ztot = {zVsi, zVsi.comments{1};
         zTne, zTne.comments{1};
         zTho, zTho.comments{1}};
 
-% Plotting histogram for correlation repartition:
-figure
-for i = 1:6
-    subplot(2, 3, i)
-    corAnalysis(ztot{i, 1})
-    title(ztot{i, 2}, 'Interpreter', 'latex')
-end
+% % Plotting histogram for correlation repartition:
+% figure
+% for i = 1:6
+%     subplot(2, 3, i)
+%     corAnalysis(ztot{i, 1})
+%     title(ztot{i, 2}, 'Interpreter', 'latex')
+% end
     
 % % Plotting all correlation repartitions:
 % for i = 1:6
@@ -61,29 +61,36 @@ for i = 1:length(ztot)
     ztot_flat{i, 2} = ztot{i, 2} + " (flattened)";
 end
 
-% Plotting histogram for correlation repartition:
-figure
-for i = 1:6
-    subplot(2, 3, i)
-    corAnalysis(ztot_flat{i})
+% % Plotting histogram for correlation repartition:
+% figure
+% for i = 1:6
+%     subplot(2, 3, i)
+%     corAnalysis(ztot_flat{i})
+% end
+
+znocell = ztot_flat{i, 1};
+for i = 2:size(ztot_flat, 1)
+    znocell = znocell + ztot_flat{i, 1};
 end
+figure
+corAnalysis(znocell)
 
 
 
 %% Normalizing these datasets:
 
-ztot_norm = cell(size(ztot));
-for i = 1:length(ztot)
-    ztot_norm{i, 1} = normalize(ztot_flat{i, 1});
-    ztot_norm{i, 2} = ztot_flat{i, 2} + "(normalized)";
-end
+% ztot_norm = cell(size(ztot));
+% for i = 1:length(ztot)
+%     ztot_norm{i, 1} = normalize(ztot_flat{i, 1});
+%     ztot_norm{i, 2} = ztot_flat{i, 2} + "(normalized)";
+% end
 
 
 
 %% Taking absolute value:
 
 ztot_abs = cell(size(ztot));
-fromnorm = 1;
+fromnorm = 0;
 if fromnorm == 1
     for i = 1:length(ztot)
         ztot_abs{i, 1} = abs(ztot_norm{i, 1});
@@ -96,12 +103,12 @@ else
     end
 end
 
-% Plotting histogram for correlation repartition:
-figure
-for i = 1:6
-    subplot(2, 3, i)
-    corAnalysis(ztot_abs{i})
-end
+% % Plotting histogram for correlation repartition:
+% figure
+% for i = 1:6
+%     subplot(2, 3, i)
+%     corAnalysis(ztot_abs{i})
+% end
 
 
 

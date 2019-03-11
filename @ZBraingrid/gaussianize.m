@@ -1,15 +1,15 @@
-function onew = gaussianize(obj, variance)
+function onew = gaussianize(obj, stdev)
 % Function that gaussianizes a ZBraingrid object, that is that convolves
 % its correlations with an exponential kernel, leading to a smoothing of
-% these correlations. variance simply is the variance associated to that
+% these correlations. stdev simply is the std associated to that
 % exponential kernel.
 
     % Building exponential kernel:
-    if variance <= 0
+    if stdev <= 0
         error('Please provide variance as a positive number.')
     end
     increment = obj.increment;
-    limit = 3 * sqrt(variance);
+    limit = 3 * stdev;
     xkern = 0:increment(1):(limit + increment(1));
     xkern = [-fliplr(xkern(2:end)), xkern];
     ykern = 0:increment(2):(limit + increment(2));
@@ -18,7 +18,7 @@ function onew = gaussianize(obj, variance)
     zkern = [-fliplr(zkern(2:end)), zkern];
     [Xkern, Ykern, Zkern] = meshgrid(xkern, ykern, zkern);
     dkern = sqrt(Xkern.^2 + Ykern.^2 + Zkern.^2);
-    ndkern = normpdf(dkern(:), 0, sqrt(variance));
+    ndkern = normpdf(dkern(:), 0, stdev);
     kern = reshape(ndkern ./ max(ndkern), size(dkern));
     
     % Recovering 4D Zcorrel matrix:
