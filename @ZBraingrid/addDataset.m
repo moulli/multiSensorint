@@ -96,6 +96,7 @@ function addDataset(obj, dataset_in, indic_in)
     Zcorrel_temp = zeros(lunind, 1);
     
     % Filling matrices:
+    printind = 0;
     for i = 1:lunind
         ftemp = find(indtemp' == unindextemp(i));
         Znumber_temp(i) = length(ftemp);
@@ -103,7 +104,8 @@ function addDataset(obj, dataset_in, indic_in)
         Zcorrel_temp(i) = mean(cor_in(ftemp));
         % Indication:
         if mod(i, floor(lunind/10)) == 0 && indic_in == 1
-            fprintf('For-loop %.2f %% completed in %.2f seconds.\n', [100*i/lunind, toc]);
+            fprintf(repmat('\b', 1, printind));
+            printind = fprintf('For-loop %.2f %% completed in %.2f seconds.\n', [100*i/lunind, toc]);
         end
     end
     

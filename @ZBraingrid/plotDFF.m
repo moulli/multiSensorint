@@ -1,4 +1,4 @@
-function plotDFF(obj, pts, radius, stimpath)
+function plotDFF(obj, pts, radius, stimpath, varargin)
 % Function that plots a mean dff, associated to the points pts (n x 3)
 % matrix, with a radius including neighbouring points as well.
 % pts is a matrix of integers, comprised in obj.gridsize, or a matrix of
@@ -35,6 +35,18 @@ function plotDFF(obj, pts, radius, stimpath)
     if radius < 0
         error('Please provide radius as a positive value.')
     end
+    % Convolution:
+    if ~isempty(varargin) && length(varargin) == 2 && varargin{1} == "convolve"
+        if isnumeric(varargin{i+1}) && length(varargin{i+1}) == 2
+            convolve = 1;
+            taur = varargin{i+1}(1);
+            taud = varargin{i+1}(2);
+        end
+    elseif ~isempty(varargin)
+        error('Please provide convolution information properly.')
+    else
+        convolve = 0;
+    end
     
     % Defining points to plot:
     % Small function to simplify computation of grid:
@@ -63,16 +75,28 @@ function plotDFF(obj, pts, radius, stimpath)
     dff = h5read(obj.paths{1}, '/Data/Brain/Analysis/DFF');
     stim = h5read(obj.paths{1}, stimpath);
     times = h5read(obj.paths{1}, '/Data/Brain/Times');
+    % Convolving stimulus:
+    if convolve == 1
+        tkern = 0:mean(gradient(times)):(8*taud);
+        expkern = exp(-tkern ./ taud) - exp(-tkern ./ taur);
+        expkern = expkern ./ max(expkern);
+        lstim = length(stim);
+        stim = conv(stim, expkern);
+        stim = stim(1:lstim);
+    end
     % Averaging DFF over all neurons of interest:
     dffplot = mean(dff(tkeep, :), 1);
     % Normalizing:
     stim = 2 * (stim - mean(stim)) / std(stim);
+    stim = stim - median(stim);
     dffplot = (dffplot - mean(stim)) / std(dffplot) -1;
+    dffplot = dffplot - median(dffplot);
     % Plotting:
     plot(times, stim)
     hold on
     plot(times, dffplot)
     title('Averaged DFF for selected points, against stimulus', 'Interpreter', 'latex')
     xlabel('Time [s]', 'Interpreter', 'latex')
+    grid on
             
 end

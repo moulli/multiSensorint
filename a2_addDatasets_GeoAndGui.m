@@ -1,12 +1,12 @@
 clear; close all; clc
 addpath(genpath('/home/ljp/Programs'))
-addpath(genpath('/home/ljp/Science/Hippolyte/multiSensorint'))
+addpath(genpath('/home/ljp/Science/Hippolyte'))
 
 
 
 %% Building structure:
 
-method = 'Correlation analysis';
+method = 'Correlation analysis, with convolutions';
 zbrainsize = [0.496, 1.122, 0.276];
 increment = 0.005;
 gridsize = floor(zbrainsize ./ increment);
@@ -21,6 +21,8 @@ zgridAud005 = ZBraingrid(method, gridsize, orientation);
 
 geoffrey = '/home/ljp/Science/GeoffreysComputer/Paper_Data/2018_Migault/Data/HDF5normalizedFiles';
 dirgeo = dir(geoffrey);
+taur = 0.9872;
+taud = 4.2385;
 for i = 1:length(dirgeo)
     ntemp = dirgeo(i).name;
     ptemp = fullfile(geoffrey, ntemp);
@@ -30,8 +32,6 @@ for i = 1:length(dirgeo)
             stemp = struct;
             stemp.name = ntemp;
             stemp.path = ptemp;
-            stemp.comment = string(h5readatt(ptemp, '/Metadata', 'Stimulus --> vestibular1 sensory type')) + " + " + ...
-                                   string(h5readatt(ptemp, '/Metadata', 'Stimulus --> vestibular1 stimulus type'));
             stemp.orientation = 'RAS';
             % Data from dataset:
             stemp.coordinates = h5read(ptemp, '/Data/Brain/ZBrainCoordinates');
@@ -40,6 +40,23 @@ for i = 1:length(dirgeo)
             % Normalizing:
             dfftemp = (dfftemp - mean(dfftemp, 2)) ./ std(dfftemp, [], 2);
             stimtemp = (stimtemp - mean(stimtemp)) ./ std(stimtemp);
+            % Convolving:
+            if isempty(taur) % first time
+                [taur, taud] = estimate_time_constants_HDF5(ptemp, 'labels', 106, 'parfor', 'n');
+                taur = median(taur);
+                taud = median(taud);
+            end
+            time = h5read(ptemp, '/Data/Brain/Times');
+            tkern = 0:mean(gradient(time)):(8*taud);
+            expkern = exp(-tkern ./ taud) - exp(-tkern ./ taur);
+            expkern = expkern ./ max(expkern);
+            lstim = length(stimtemp);
+            stimtemp = conv(stimtemp, expkern);
+            stimtemp = stimtemp(1:lstim);
+            % Comment adding convolutions:
+            stemp.comment = string(h5readatt(ptemp, '/Metadata', 'Stimulus --> vestibular1 sensory type')) + " + " + ...
+                                   string(h5readatt(ptemp, '/Metadata', 'Stimulus --> vestibular1 stimulus type') + ...
+                                   " + tauRise and tauDecay respectively " + string(taur) + " and " + string(taud));
             % Computing correlation and adding file:
             stemp.correlation = sum(dfftemp .* stimtemp, 2) ./ sqrt(sum(dfftemp.^2, 2) .* sum(stimtemp.^2, 2));
             addDataset(zgridGeo005, stemp);
@@ -86,6 +103,8 @@ zgridGeo05 = downGrid(zgridGeo005, gridsize);
 
 guillaume = '/home/ljp/Science/Guillaume/Thermotaxis/Datasets';
 dirgui = dir(guillaume);
+taur = 0.25357;
+taud = 5.8706;
 for i = 1:length(dirgui)
     ntemp = dirgui(i).name;
     ptemp = fullfile(guillaume, ntemp);
@@ -103,9 +122,6 @@ for i = 1:length(dirgui)
             else
                 templevel = "neutral";
             end
-            stemp.comment = string(h5readatt(ptemp, '/Metadata', 'Stimulus --> RandomPulses sensory type')) + " + " + ...
-                                   string(h5readatt(ptemp, '/Metadata', 'Stimulus --> RandomPulses stimulus type') + " + " + ...
-                                   string(temperature) + " degrees + " + templevel);
             stemp.orientation = 'RPS';
             % Data from dataset:
             stemp.coordinates = h5read(ptemp, '/Data/Brain/ZBrainCoordinates');
@@ -115,6 +131,24 @@ for i = 1:length(dirgui)
             % Normalizing:
             dfftemp = (dfftemp - mean(dfftemp, 2)) ./ std(dfftemp, [], 2);
             stimtemp = (stimtemp - mean(stimtemp)) ./ std(stimtemp);
+            % Convolving:
+            if isempty(taur) % first time
+                [taur, taud] = estimate_time_constants_HDF5(ptemp, 'labels', 106, 'parfor', 'n');
+                taur = median(taur);
+                taud = median(taud);
+            end
+            time = h5read(ptemp, '/Data/Brain/Times');
+            tkern = 0:mean(gradient(time)):(8*taud);
+            expkern = exp(-tkern ./ taud) - exp(-tkern ./ taur);
+            expkern = expkern ./ max(expkern);
+            lstim = length(stimtemp);
+            stimtemp = conv(stimtemp, expkern);
+            stimtemp = stimtemp(1:lstim);
+            % Comment adding convolutions:
+            stemp.comment = string(h5readatt(ptemp, '/Metadata', 'Stimulus --> RandomPulses sensory type')) + " + " + ...
+                                   string(h5readatt(ptemp, '/Metadata', 'Stimulus --> RandomPulses stimulus type') + " + " + ...
+                                   string(temperature) + " degrees + " + templevel + ...
+                                   " + tauRise and tauDecay respectively " + string(taur) + " and " + string(taud));
             % Computing correlation and adding file:
             stemp.correlation = sum(dfftemp .* stimtemp, 2) ./ sqrt(sum(dfftemp.^2, 2) .* sum(stimtemp.^2, 2));
             addDataset(zgridGui005, stemp);
@@ -165,6 +199,8 @@ zgridGui05 = downGrid(zgridGui005, gridsize);
 
 auditory = '/home/ljp/Science/Hippolyte/auditory_h5/newHDF5_auditory';
 diraud = dir(auditory);
+taur = 0.25184;
+taud = 1.4269;
 for i = 1:length(diraud)
     ntemp = diraud(i).name;
     ptemp = fullfile(auditory, ntemp);
@@ -174,8 +210,6 @@ for i = 1:length(diraud)
             stemp = struct;
             stemp.name = ntemp;
             stemp.path = ptemp;
-            stemp.comment = string(h5readatt(ptemp, '/Metadata', 'Stimulus --> auditory1 sensory type')) + " + " + ...
-                                   string(h5readatt(ptemp, '/Metadata', 'Stimulus --> auditory1 stimulus type'));
             stemp.orientation = 'RPS';
             % Data from dataset:
             stemp.coordinates = h5read(ptemp, '/Data/Brain/ZBrainCoordinates');
@@ -185,6 +219,23 @@ for i = 1:length(diraud)
             dfftemp = (dfftemp - mean(dfftemp, 2)) ./ std(dfftemp, [], 2);
             stimtemp = (stimtemp - mean(stimtemp)) ./ std(stimtemp);
             stimtemp = reshape(stimtemp, 1, length(stimtemp));
+            % Convolving:
+            if isempty(taur) % first time
+                [taur, taud] = estimate_time_constants_HDF5(ptemp, 'labels', 106, 'parfor', 'n');
+                taur = median(taur);
+                taud = median(taud);
+            end
+            time = h5read(ptemp, '/Data/Brain/Times');
+            tkern = 0:mean(gradient(time)):(8*taud);
+            expkern = exp(-tkern ./ taud) - exp(-tkern ./ taur);
+            expkern = expkern ./ max(expkern);
+            lstim = length(stimtemp);
+            stimtemp = conv(stimtemp, expkern);
+            stimtemp = stimtemp(1:lstim);
+            % Comment adding convolutions:
+            stemp.comment = string(h5readatt(ptemp, '/Metadata', 'Stimulus --> auditory1 sensory type')) + " + " + ...
+                                   string(h5readatt(ptemp, '/Metadata', 'Stimulus --> auditory1 stimulus type') + ...
+                                   " + tauRise and tauDecay respectively " + string(taur) + " and " + string(taud));
             % Computing correlation and adding file:
             stemp.correlation = sum(dfftemp .* stimtemp, 2) ./ sqrt(sum(dfftemp.^2, 2) .* sum(stimtemp.^2, 2));
             addDataset(zgridAud005, stemp);
@@ -231,17 +282,17 @@ zgridAud05 = downGrid(zgridAud005, gridsize);
 
 %% Assiging new datasets and saving them:
 
-zgrid005 = zgridGeo005 + zgridGui005 + zgridAud005;
-pathcreated005 = fullfile('/home/ljp/Science/Hippolyte', 'zgrid005.mat');
-save(pathcreated005, 'zgrid005')
+zgrid005conv = zgridGeo005 + zgridGui005 + zgridAud005;
+pathcreated005 = fullfile('/home/ljp/Science/Hippolyte', 'zgrid005conv.mat');
+save(pathcreated005, 'zgrid005conv')
 
-zgrid01 = zgridGeo01 + zgridGui01 + zgridAud01;
-pathcreated01 = fullfile('/home/ljp/Science/Hippolyte', 'zgrid01.mat');
-save(pathcreated01, 'zgrid01')
+zgrid01conv = zgridGeo01 + zgridGui01 + zgridAud01;
+pathcreated01 = fullfile('/home/ljp/Science/Hippolyte', 'zgrid01conv.mat');
+save(pathcreated01, 'zgrid01conv')
 
-zgrid05 = zgridGeo05 + zgridGui05 + zgridAud05;
-pathcreated05 = fullfile('/home/ljp/Science/Hippolyte', 'zgrid05.mat');
-save(pathcreated05, 'zgrid05')
+zgrid05conv = zgridGeo05 + zgridGui05 + zgridAud05;
+pathcreated05 = fullfile('/home/ljp/Science/Hippolyte', 'zgrid05conv.mat');
+save(pathcreated05, 'zgrid05conv')
 
 
 
@@ -281,6 +332,29 @@ save(pathcreated05, 'zgrid05')
 %     xticks(1:5)
 %     xticklabels(subsets)
 %     grid on
+% end
+
+
+
+%% BSD algorithm:
+
+% i_int = 0.2:0.2:2;
+% j_int = 0.5:0.5:10;
+% done_int = randperm(length(i_int)*length(j_int));
+% labelin = 106;
+% for d = done_int
+%     [itemp, jtemp] = ind2sub([length(i_int), length(j_int)], d);
+%     itemp = i_int(itemp);
+%     jtemp = j_int(jtemp);
+%     fprintf('Rise and decay constants tried are respectively %.1f and %.1f.\n', [itemp, jtemp]);
+%     try
+%         h5_path = '/home/ljp/Science/Hippolyte/auditory_h5/newHDF5_auditory/2015-02-24Run05_a.h5';
+%         [tr, td] = estimate_time_constants_HDF5(h5_path, 'labels', labelin, 'parfor', 'n');
+%         fprintf('Worked for %.1f and %.1f.\n', [itemp, jtemp]);
+%         break
+%     catch
+%         fprintf('Did not work for i = %.1f and j = %.1f, moving on.\n', [itemp, jtemp]);
+%     end
 % end
 
 

@@ -7,7 +7,8 @@ addpath('/home/ljp/Science/Hippolyte')
 
 %% Getting ZBraingrid structure:
 
-load('zgrid005.mat')
+load('zgrid005conv.mat')
+zgrid005 = zgrid005conv;
 
 
 
@@ -27,9 +28,9 @@ figure
 corAnalysis(zflat)
 
 % Gaussianize and plot:
-zgauss = gaussianize(zflat, 0.01);
-figure
-plot(zgauss, 'rid', [-0.05, 0.05], 'intercept')
+% zgauss = gaussianize(zflat, 0.01);
+% figure
+% plot(zgauss, 'rid', [-0.05, 0.05], 'intercept')
 
 
 
@@ -53,10 +54,42 @@ plot(znocold, 'rid', [0, 0.1], 'intercept')
 
 %% Binary comparison:
 
-blim = [0.075, 0.075];
+blim = [0.1, 0.1];
 zgauss = gaussianize(zabs, 0.01);
 figure
-binaryComp(zgauss(3), zgauss(1), blim)
+binaryComp(zgauss(3), zgauss(2), blim)
+
+
+%% DFF comparison:
+
+zaud = subset(zgrid005, keys(3));
+zsin = subset(zgrid005, keys(1));
+ctemp = [58, 133, 34];
+figure
+subplot(2, 1, 1)
+plotDFF(zaud(1), ctemp, 0.01, '/Data/Stimulus/auditory1/acousticPulse')
+title('Auditory, both linked to stimulus', 'Interpreter', 'latex')
+subplot(2, 1, 2)
+plotDFF(zsin(1), ctemp, 0.01, '/Data/Stimulus/vestibular1/motorAngle')
+title('Sine vestibular, both linked to stimulus', 'Interpreter', 'latex')
+
+ctemp = [59, 106, 42];
+figure
+subplot(2, 1, 1)
+plotDFF(zaud(2), ctemp, 0.01, '/Data/Stimulus/auditory1/acousticPulse')
+title('Auditory, just auditory linked to stimulus', 'Interpreter', 'latex')
+subplot(2, 1, 2)
+plotDFF(zsin(1), ctemp, 0.01, '/Data/Stimulus/vestibular1/motorAngle')
+title('Sine vestibular, just auditory linked to stimulus', 'Interpreter', 'latex')
+
+ctemp = [55, 132, 24];
+figure
+subplot(2, 1, 1)
+plotDFF(zaud(1), ctemp, 0.01, '/Data/Stimulus/auditory1/acousticPulse')
+title('Auditory, just sine vestibular linked to stimulus', 'Interpreter', 'latex')
+subplot(2, 1, 2)
+plotDFF(zsin(1), ctemp, 0.01, '/Data/Stimulus/vestibular1/motorAngle')
+title('Sine vestibular, just sine vestibular linked to stimulus', 'Interpreter', 'latex')
 
 
 

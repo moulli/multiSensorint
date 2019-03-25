@@ -140,8 +140,9 @@ classdef ZBraingrid < handle
         
         %% Analysis operations:
         corAnalysis(obj, numbin); % correlation histogram for analysis
-        plotDFF(obj, pts, radius, stimpath); % plots mean dff for selected points
+        plotDFF(obj, pts, radius, stimpath, varargin); % plots mean dff for selected points
         binaryComp(obj1, obj2, blim); % binary comparison between two objects 
+        binaryComp_bestneurons(obj1, obj2, bestneurons); % binary comparison keeping fixed number of neurons
         
     end
     
