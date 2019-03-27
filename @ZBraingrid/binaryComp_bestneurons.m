@@ -38,7 +38,7 @@ function binaryComp_bestneurons(obj1, obj2, bestneurons)
     grid2(otemp2.Zindex(ind_correl2)) = otemp2.Zcorrel(ind_correl2);
     grid2 = 2 .* (grid2 ~= 0);
     % Summing:
-    gridt = grid1 + grid2; find(gridt ~= 0)
+    gridt = grid1 + grid2; find(gridt ~= 0);
     
     % Defining points:
     pt_both = find(gridt == 3);
