@@ -12,7 +12,7 @@ stim_length = 10; % number of points for stimulus length
 
 dirpath = '/home/ljp/Science/Hippolyte/ALL_DATASETS';
 dirdata = dir(dirpath);
-for i = 1:3 %length(dirdata)
+for i = 4 %1:length(dirdata)
     
     % Informations on file:
     ntemp = dirdata(i).name; % name of the file
@@ -77,4 +77,29 @@ for i = 1:3 %length(dirdata)
     end
     
 end
+
+
+%% Computing correlation coefficient:
+
+% Integration of points after stimulus:
+integral_quantile = 0.9975;
+integral_influence = abs(integral_mat);
+integral_influence = integral_mat ./ quantile(integral_influence, integral_quantile);
+integral_influence = min(integral_influence, ones(size(integral_influence)));
+integral_influence = max(integral_influence, -ones(size(integral_influence)));
+
+% Influence of variance:
+variance_q85 = quantile(variance_mat, 0.85);
+variance_q95 = quantile(variance_mat, 0.95);
+variance_influence = (variance_mat <= variance_q85).*1 + (variance_mat > variance_q85).*exp(-(variance_mat-variance_q85)/variance_q95);
+
+% Influence of bootstrap:
+bootstrap_quantile = 0.975;
+bootstrap_influence = abs(2*(boot_prob-0.5));
+bootstrap_influence = bootstrap_influence ./ quantile(bootstrap_influence, bootstrap_quantile);
+bootstrap_influence(bootstrap_influence > 1) = 1;
+
+% Product of all:
+ivb_all = integral_influence .* variance_influence .* bootstrap_influence;
+
     

@@ -7,8 +7,8 @@ addpath('/home/ljp/Science/Hippolyte')
 
 %% Getting ZBraingrid structure:
 
-load('zgrid005conv.mat')
-zgrid005 = zgrid005conv;
+load('zgridPost005.mat')
+zgrid005 = zgridPost005;
 
 
 
@@ -57,7 +57,7 @@ plot(znocold, 'rid', [0, 0.1], 'intercept')
 blim = [0.1, 0.1];
 zgauss = gaussianize(zabs, 0.01);
 figure
-binaryComp_bestneurons(zgauss(3), zgauss(2), 100)
+binaryComp_bestneurons(zgauss(3), zgauss(2), 1000)
 
 
 %% DFF comparison:
