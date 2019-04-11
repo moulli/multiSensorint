@@ -30,7 +30,7 @@ function onew = flatten(obj, opt_comment)
     % Adding information:
     onew.gridsize = [obj.gridsize(1:3), 1];
     onew.names = ["Flattened ZBraingrid object from " + string(length(obj.names)) + " datasets."];
-    onew.paths = "No path for flattened ZBraingrid objects";
+    onew.paths = {onew.paths};
     if nargin == 2
         onew.comments = string(opt_comment);
     elseif length(unique(obj.comments)) == 1

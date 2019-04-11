@@ -1,4 +1,5 @@
 clear; close all; clc
+addpath(genpath('/home/ljp/Science/Hippolyte'))
 
 
 
@@ -29,7 +30,7 @@ zbrainsize = [0.496, 1.122, 0.276];
 increment = 0.005;
 gridsize = floor(zbrainsize ./ increment);
 orientation = 'RAS';
-zgridPost005 = ZBraingrid(method, gridsize, orientation);
+zgridPost005temp = ZBraingrid(method, gridsize, orientation);
 
 
 
@@ -53,21 +54,38 @@ for i = 1:length(dirdata)
             % Getting information from HDF5 file:
             stim_path = h5readatt(ptemp, '/Metadata', 'Stimulus path'); % getting path to stimulus in HDF5
             dff = h5read(ptemp, '/Data/Brain/Analysis/DFF');
-            stim = h5read(ptemp, stim_path); figure; hold on; plot(stim); stim = stim .* (gradient(stim) > 0.1); plot(stim)
-            % Computing correlation:
-            cor_temp = a6_function_integrate_cor(stim, dff, stim_in, num_boot_in, quantiles_in);
+            stim = h5read(ptemp, stim_path);
             % Building stemp:
             stemp = struct;
             stemp.name = ntemp;
             stemp.path = ptemp;
             stemp.coordinates = h5read(ptemp, '/Data/Brain/ZBrainCoordinates');
-            stemp.correlation = cor_temp;
             if regexp(ntemp, '201\d(-\d{2}){2}Run\d{2}.h5')
-                stemp.orientation = 'RAS';
-                stemp.comment = string(h5readatt(ptemp, '/Metadata', 'Stimulus --> vestibular1 sensory type')) + " + " + ...
-                                       string(h5readatt(ptemp, '/Metadata', 'Stimulus --> vestibular1 stimulus type'));                
+%                 % Orientation:
+%                 stemp.orientation = 'RAS';
+%                 % Comment:
+%                 stemp_comtemp = string(h5readatt(ptemp, '/Metadata', 'Stimulus --> vestibular1 sensory type')) + " + " + ...
+%                                        string(h5readatt(ptemp, '/Metadata', 'Stimulus --> vestibular1 stimulus type'));  
+%                 % Correlations:
+%                 stim_temp = abs(stim .* (abs(gradient(stim)) > 0.1));
+%                 stemp.correlation = a6_function_integrate_cor(stim_temp, dff, stim_in, num_boot_in, quantiles_in);
+%                 stemp.comment = stemp_comtemp + " both sides";
+%                 addDataset(zgridPost005temp, stemp);
+%                 disp(zgridPost005temp)
+%                 stim_temp = abs(stim .* (gradient(stim) > 0.1));
+%                 stemp.correlation = a6_function_integrate_cor(stim_temp, dff, stim_in, num_boot_in, quantiles_in);
+%                 stemp.comment = stemp_comtemp + " first side";
+%                 addDataset(zgridPost005temp, stemp);
+%                 disp(zgridPost005temp)
+%                 stim_temp = abs(stim .* (gradient(stim) < 0.1));
+%                 stemp.correlation = a6_function_integrate_cor(stim_temp, dff, stim_in, num_boot_in, quantiles_in);
+%                 stemp.comment = stemp_comtemp + " second side";
+%                 addDataset(zgridPost005temp, stemp);
+%                 disp(zgridPost005temp)
             elseif regexp(ntemp, '201\d{5}_Run\d{2}_rp_Tset=\d{1,}.h5')
+                % Orientation:
                 stemp.orientation = 'RPS';
+                % Comment:
                 temperature = str2double(ntemp(24:end-3));
                 if temperature <= 20
                     templevel = "cold";
@@ -78,15 +96,22 @@ for i = 1:length(dirdata)
                 end
                 stemp.comment = string(h5readatt(ptemp, '/Metadata', 'Stimulus --> RandomPulses sensory type')) + " + " + ...
                                        string(h5readatt(ptemp, '/Metadata', 'Stimulus --> RandomPulses stimulus type') + " + " + ...
-                                       string(temperature) + " degrees + " + templevel);             
+                                       string(temperature) + " degrees + " + templevel);   
+                % Correlation:
+                stemp.correlation = a6_function_integrate_cor(stim, dff, stim_in, num_boot_in, quantiles_in, round(h5read(ptemp, '/Data/Stimulus/RandomPulses/Parameters')/0.4)+6);
+                addDataset(zgridPost005temp, stemp);
+                disp(zgridPost005temp)
             elseif regexp(ntemp, '201\d(-\d{2}){2}Run\d{2}_a.h5')
-                stemp.orientation = 'RPS';
-                stemp.comment = string(h5readatt(ptemp, '/Metadata', 'Stimulus --> auditory1 sensory type')) + " + " + ...
-                                       string(h5readatt(ptemp, '/Metadata', 'Stimulus --> auditory1 stimulus type'));                
+%                 % Orientation:
+%                 stemp.orientation = 'RPS';
+%                 % Comment:
+%                 stemp.comment = string(h5readatt(ptemp, '/Metadata', 'Stimulus --> auditory1 sensory type')) + " + " + ...
+%                                        string(h5readatt(ptemp, '/Metadata', 'Stimulus --> auditory1 stimulus type'));    
+%                 % Correlation:
+%                 stemp.correlation = a6_function_integrate_cor(stim, dff, stim_in, num_boot_in, quantiles_in);  
+%                 addDataset(zgridPost005temp, stemp);
+%                 disp(zgridPost005temp)
             end
-            % Adding file:
-            addDataset(zgridPost005, stemp);
-            disp(zgridPost005)
         catch
             fprintf('Problem with HDF5, moving on to the next one. \n');
         end
@@ -98,13 +123,13 @@ end
 
 %% Cleaning duplicates if necessary (should not be):
 
-clean(zgridPost005);
+clean(zgridPost005temp);
 
 
 
 %% Saving:
 
-pathcreated005 = fullfile('/home/ljp/Science/Hippolyte', 'zgridPost005.mat');
-save(pathcreated005, 'zgridPost005')
+pathcreated005temp = fullfile('/home/ljp/Science/Hippolyte', 'zgridPost005temp.mat');
+save(pathcreated005temp, 'zgridPost005temp')
 
 

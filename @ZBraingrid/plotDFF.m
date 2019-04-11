@@ -71,30 +71,51 @@ function plotDFF(obj, pts, radius, stimpath, varargin)
     end
     
     % Plotting from HDF5:
-    % Loading:
-    dff = h5read(obj.paths{1}, '/Data/Brain/Analysis/DFF');
-    stim = h5read(obj.paths{1}, stimpath);
-    times = h5read(obj.paths{1}, '/Data/Brain/Times');
-    % Convolving stimulus:
-    if convolve == 1
-        tkern = 0:mean(gradient(times)):(8*taud);
-        expkern = exp(-tkern ./ taud) - exp(-tkern ./ taur);
-        expkern = expkern ./ max(expkern);
-        lstim = length(stim);
-        stim = conv(stim, expkern);
-        stim = stim(1:lstim);
+    % Recovering all the paths:
+    all_paths = [];
+    if iscell(obj.paths) && iscell(obj(1).paths)
+        for ic = 1:length(obj.paths)
+            all_paths = [all_paths; obj(ic).paths{1}];
+        end
+    elseif iscell(obj.paths)
+        all_paths = obj.paths{1};
+    else
+        all_paths = obj.paths;
     end
-    % Averaging DFF over all neurons of interest:
-    dffplot = mean(dff(tkeep, :), 1);
-    % Normalizing:
-    stim = 2 * (stim - mean(stim)) / std(stim);
-    stim = stim - median(stim);
-    dffplot = (dffplot - mean(stim)) / std(dffplot) -1;
-    dffplot = dffplot - median(dffplot);
+    % Looping over all datasets:
+    for i = 1:length(all_paths)
+        % Loading:
+        dff = h5read(all_paths(i), '/Data/Brain/Analysis/DFF');
+        stim = h5read(all_paths(i), stimpath);
+        times = h5read(all_paths(i), '/Data/Brain/Times');
+        % Convolving stimulus:
+        if convolve == 1
+            tkern = 0:mean(gradient(times)):(8*taud);
+            expkern = exp(-tkern ./ taud) - exp(-tkern ./ taur);
+            expkern = expkern ./ max(expkern);
+            lstim = length(stim);
+            stim = conv(stim, expkern);
+            stim = stim(1:lstim);
+        end
+        % Averaging DFF over all neurons of interest:
+        dffplot_temp = mean(dff(tkeep, :), 1);
+        % Normalizing:
+        stim = 2 * (stim - mean(stim)) / std(stim);
+        stim = stim - median(stim);
+        dffplot_temp = (dffplot_temp - mean(stim)) / std(dffplot_temp) -1;
+        dffplot_temp = dffplot_temp - median(dffplot_temp);
+        dffplot_temp = dffplot_temp / length(all_paths);
+        if i == 1
+            dffplot = dffplot_temp;
+        else
+            dffplot = dffplot + dffplot_temp;
+        end
+    end
+    
     % Plotting:
     plot(times, stim)
     hold on
-    plot(times, dffplot)
+    plot(times, dffplot_temp)
     title('Averaged DFF for selected points, against stimulus', 'Interpreter', 'latex')
     xlabel('Time [s]', 'Interpreter', 'latex')
     grid on

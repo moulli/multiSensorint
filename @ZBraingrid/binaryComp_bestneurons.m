@@ -15,11 +15,11 @@ function binaryComp_bestneurons(obj1, obj2, bestneurons)
 
     % Checking blim:
     if ~isvector(bestneurons)
-        error('Please provide binary limit as a vector')
+        error('Please provide number of neurons as a vector')
     elseif length(bestneurons) == 1
         bestneurons = bestneurons .* ones(1, 2);
     elseif length(bestneurons) ~= 2
-        error('Please provide binary limit as a vector of length 1 or 2.')
+        error('Please provide number of neurons as a vector of length 1 or 2.')
     elseif ~isequal(bestneurons, floor(bestneurons))
         error('Number of neurons to keep must be integer.')
     end
@@ -29,14 +29,12 @@ function binaryComp_bestneurons(obj1, obj2, bestneurons)
     grid1 = zeros(sgrid);
     [~, ind_correl1] = sort(otemp1.Zcorrel, 'descend');
     ind_correl1 = ind_correl1(1:bestneurons(1));
-    grid1(otemp1.Zindex(ind_correl1)) = otemp1.Zcorrel(ind_correl1);
-    grid1 = 1 .* (grid1 ~= 0);
+    grid1(otemp1.Zindex(ind_correl1)) = 1;
     otemp2 = flatten(obj2);
     grid2 = zeros(sgrid);
     [~, ind_correl2] = sort(otemp2.Zcorrel, 'descend');
     ind_correl2 = ind_correl2(1:bestneurons(2));
-    grid2(otemp2.Zindex(ind_correl2)) = otemp2.Zcorrel(ind_correl2);
-    grid2 = 2 .* (grid2 ~= 0);
+    grid2(otemp2.Zindex(ind_correl2)) = 2;
     % Summing:
     gridt = grid1 + grid2; find(gridt ~= 0);
     

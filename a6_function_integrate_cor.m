@@ -1,4 +1,4 @@
-function out = a6_function_integrate_cor(stimulus, dff, stim_in, num_boot_in, quantiles_in)
+function out = a6_function_integrate_cor(stimulus, dff, stim_in, num_boot_in, quantiles_in, stim_params)
 
 %% Function that will compute correlation based on a5 for each neuron.
 %  This function takes as inputs the stimulus (1 x ntimes) vector, the
@@ -35,23 +35,30 @@ function out = a6_function_integrate_cor(stimulus, dff, stim_in, num_boot_in, qu
     
     %% Analyzing stimulus:
     
-    % Getting stimulus 'spikes' information:
-    jstim = 1;
-    info_stim = [];
-    while jstim < length(stimulus)
-        if stimulus(jstim+1)-stimulus(jstim) >= stim_detect
-            info_stim = [info_stim, jstim];
-            jstim = jstim + stim_rest;
-        else
-            jstim = jstim + 1;
+    % If stim_params, then do not compute spikes:
+    if nargin == 6
+        info_stim = stim_params;
+    else
+    
+        % Getting stimulus 'spikes' information:
+        jstim = 1;
+        info_stim = [];
+        while jstim < length(stimulus)
+            if stimulus(jstim+1)-stimulus(jstim) >= stim_detect
+                info_stim = [info_stim, jstim];
+                jstim = jstim + stim_rest;
+            else
+                jstim = jstim + 1;
+            end
         end
+
+        % Getting rid of stimuli going before stimulus start:
+        info_stim = info_stim(info_stim-stim_length >= 1);
+
+        % Getting rid of stimuli going beyond stimulus length:
+        info_stim = info_stim(info_stim+stim_length-1 <= length(stimulus));
+        
     end
-    
-    % Getting rid of stimuli going before stimulus start:
-    info_stim = info_stim(info_stim-stim_length+1 >= 1);
-    
-    % Getting rid of stimuli going beyond stimulus length:
-    info_stim = info_stim(info_stim+stim_length-1 <= length(stimulus));
     
     
     
