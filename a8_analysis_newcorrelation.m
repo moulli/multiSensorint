@@ -33,7 +33,7 @@ corAnalysis(zflat)
 
 %% Gaussianize results:
 
-binaryComp_plotDFF(zkeys{1}, zkeys{7}, 1000)
+binaryComp_plotDFF(zkeys{1}, zkeys{10}, 100)
 
 
 

@@ -54,7 +54,7 @@ function binaryComp_plotDFF(obj1, obj2, bestneurons)
     [x_o1, y_o1, z_o1] = ind2sub(sgrid, pt_o1);
     [x_o2, y_o2, z_o2] = ind2sub(sgrid, pt_o2);
     
-    % Usinf right coordinates:
+    % Using right coordinates:
     xtemp = (obj1.xgrid(2:end)' + obj1.xgrid(1:end-1)') / 2;
     ytemp = (obj1.ygrid(2:end)' + obj1.ygrid(1:end-1)') / 2;
     ztemp = (obj1.zgrid(2:end)' + obj1.zgrid(1:end-1)') / 2;
@@ -76,7 +76,8 @@ function binaryComp_plotDFF(obj1, obj2, bestneurons)
     %% Getting points from cursor:
     
     % Plotting:
-    h.myfig = figure;
+    h.myfig = figure('units','normalized','outerposition',[0 0 1 1]);
+        subplot(4, 1, 1:2)
         scatter3(x_both, y_both, z_both, 40, [0, 0, 0], 'filled');
         hold on
         scatter3(x_o1, y_o1, z_o1, [], [0, 1, 0], '.')
@@ -102,77 +103,79 @@ function binaryComp_plotDFF(obj1, obj2, bestneurons)
     
     %% Returning to grid, taking data from HDF5:
     
+    % Defining dff_tot{i}:
     dff_tot = cell(2, 3);
+    dff_tot{1, 1} = [];
+    dff_tot{1, 2} = [];
+    dff_tot{1, 3} = [];
+    dff_tot{2, 1} = [];
+    dff_tot{2, 2} = [];
+    dff_tot{2, 3} = [];
     % Indexes from both objects:
-    [x1temp, y1temp, z1temp] = ind2sub(sgrid, obj1.Zindex);
-    [x2temp, y2temp, z2temp] = ind2sub(sgrid, obj2.Zindex);
-    length(xtemp), length(ytemp), length(ztemp)
-    min(unique([x1temp, y1temp, z1temp], 'row'))
-    max(unique([x1temp, y1temp, z1temp], 'row'))
-    Xobj1 = compval(unique([x1temp, y1temp, z1temp], 'row'));
-    Xobj2 = compval(unique([x2temp, y2temp, z2temp], 'row'));
-    for i = 1:lmpt
-        % Defining dff_tot{i}:
-        dff_tot{1, 1} = [];
-        dff_tot{1, 2} = [];
-        dff_tot{1, 3} = [];
-        dff_tot{2, 1} = [];
-        dff_tot{2, 2} = [];
-        dff_tot{2, 3} = [];
+    [x1temp, y1temp, z1temp, d1temp] = ind2sub([sgrid, length(obj1)], obj1.Zindex);
+    [x2temp, y2temp, z2temp, d2temp] = ind2sub([sgrid, length(obj2)], obj2.Zindex);
+    Xobj1 = compval([x1temp, y1temp, z1temp]);
+    Xobj2 = compval([x2temp, y2temp, z2temp]);
+    % Simplifying for loop:
+    obj_tot = {obj1, obj2};
+    Xobj_tot = {Xobj1, Xobj2};
+    d_tot = {d1temp, d2temp};
+    % Launching loop:
+    for ipt = 1:lmpt
         % Taking point or closest point:
-        mptpos = mypoints(i).Position;
-        distot1 = sum((Xobj1 - mptpos).^2, 2);
-        distot2 = sum((Xobj2 - mptpos).^2, 2);
-        while 1
-            [dist1, indist1] = min(distot1);
-            [dist2, indist2] = min(distot2);
-            if isequal(Xobj1(indist1, :), Xobj2(indist2, :))
-                ptfin = Xobj1(indist1, :);
-                break
-            else
-                [~, indmin] = min([dist1, dist2]);
-                if indmin == 1
-                    Xobj2(indist2, :) = [];
-                else
-                    Xobj1(indist1, :) = [];
+        mptpos = mypoints(ipt).Position;
+        % Looping on both objects:
+        for iobj = 1:2
+            % Get closest point:
+            distot = sum((Xobj_tot{iobj} - mptpos).^2, 2);
+            [~, indist] = min(distot);
+            ptfin = Xobj_tot{iobj}(indist, :);
+            % Recover point index, and neuron number:
+            xpos = find(xtemp == ptfin(1));
+            ypos = find(ytemp == ptfin(2));
+            zpos = find(ztemp == ptfin(3));
+            mptind = sub2ind(sgrid, xpos, ypos, zpos);
+            % Looping over grids in object iobj:
+            for igrid = 1:max(d_tot{iobj})
+                % Recovering grid points:
+                masktemp = (d_tot{iobj} == igrid);
+                findi = find((mptind + (igrid-1)*prod(sgrid)) == obj_tot{iobj}.Zindex(masktemp));
+                % If mptind is part of the grid:
+                if ~isempty(findi)
+                    % Recovering neuron numbers:
+                    Zneutemp = obj_tot{iobj}.Zneuron(masktemp);
+                    findi = Zneutemp(findi, :);
+                    findi(findi == 0) = [];
+                    % Accessing HDF5:
+                    ptemp = char(obj_tot{iobj}.paths(igrid));
+                    stim_path = h5readatt(ptemp, '/Metadata', 'Stimulus path');
+                    dff = h5read(ptemp, '/Data/Brain/Analysis/DFF');
+                    stim = h5read(ptemp, stim_path);
+                    stim = reshape(stim, 1, length(stim));
+                    times = h5read(ptemp, '/Data/Brain/Times');
+                    times = reshape(times, 1, length(times));
+                    % Adapt if not same length:
+                    if ~isempty(dff_tot{iobj, 1})
+                        numzeros = size(dff_tot{iobj, 1}, 2) - size(dff(findi, :), 2);
+                        if numzeros >= 0
+                            dff_findi = [dff(findi, :), zeros(size(dff(findi, :), 1), numzeros)];
+                            stim_findi = [stim, zeros(1, numzeros)];
+                            times_findi = [times, zeros(1, numzeros)];
+                        elseif numzeros < 0
+                            dff_findi = dff(findi, 1:end+numzeros);
+                            stim_findi = stim(1:end+numzeros);
+                            times_findi = times(1:end+numzeros);
+                        end
+                    else
+                        dff_findi = dff(findi, :);
+                        stim_findi = stim;
+                        times_findi = times;
+                    end
+                    % Saving in cell:
+                    dff_tot{iobj, 1} = [dff_tot{iobj, 1}; dff_findi];
+                    dff_tot{iobj, 2} = [dff_tot{iobj, 2}; stim_findi];
+                    dff_tot{iobj, 3} = [dff_tot{iobj, 3}; times_findi];
                 end
-            end
-        end
-        % Recovering point index, and neuron number:
-        xpos = find(obj1.xgrid == ptfin(1));
-        ypos = find(obj1.ygrid == ptfin(2));
-        zpos = find(obj1.zgrid == ptfin(3));
-        mptind = sub2ind(sgrid, xpos, ypos, zpos);
-        % Looping over object 1:
-        for i1 = 1:length(obj1)
-            findi1 = find(mptind == obj1(i1).Zindex);
-            if ~isempty(findi1)
-                findi1 = obj1(i1).Zneuron(findi1, :);
-                findi1(findi1 == 0) = [];
-                ptemp = obj1(i1).paths;
-                stim_path = h5readatt(ptemp, '/Metadata', 'Stimulus path');
-                dff = h5read(ptemp, '/Data/Brain/Analysis/DFF');
-                stim = h5read(ptemp, stim_path);
-                times = h5read(ptemp, '/Data/Brain/Times');      
-                dff_tot{1, 1} = [dff_tot{1, 1}; dff(findi1, :)];
-                dff_tot{1, 2} = [dff_tot{1, 2}; stim];
-                dff_tot{1, 3} = [dff_tot{1, 3}, times];
-            end
-        end
-        % Looping over object 2:
-        for i2 = 1:length(obj2)
-            findi2 = find(mptind == obj2(i2).Zindex);
-            if ~isempty(findi2)
-                findi2 = obj2(i2).Zneuron(findi2, :);
-                findi2(findi2 == 0) = [];
-                ptemp = obj2(i2).paths;
-                stim_path = h5readatt(ptemp, '/Metadata', 'Stimulus path');
-                dff = h5read(ptemp, '/Data/Brain/Analysis/DFF');
-                stim = h5read(ptemp, stim_path);
-                times = h5read(ptemp, '/Data/Brain/Times');      
-                dff_tot{2, 1} = [dff_tot{2, 1}; dff(findi2, :)];
-                dff_tot{2, 2} = [dff_tot{2, 2}; stim];
-                dff_tot{2, 3} = [dff_tot{2, 3}, times];
             end
         end
     end
@@ -180,15 +183,24 @@ function binaryComp_plotDFF(obj1, obj2, bestneurons)
                 
     %% Plotting final signal:
     
-    figure 
-    subplot(2, 1, 1)
-    hold on
-    plot(dff_tot{1, 3}(1, :), dff_tot{1, 2}(1, :))
-    plot(dff_tot{1, 3}(1, :), mean(dff_tot{1, 1}))
-    subplot(2, 1, 2)
-    hold on
-    plot(dff_tot{2, 3}(1, :), dff_tot{2, 2}(1, :))
-    plot(dff_tot{2, 3}(1, :), mean(dff_tot{2, 1}))
+    %for i = 1:2; for j = 1:3; disp(size(dff_tot{i, j})); end; end
+    %figure 
+    for iobj = 1:2
+        % Recovering:
+        dff_plot = mean(dff_tot{iobj, 1}, 1);
+        dff_stim = dff_tot{iobj, 2}(1, :);
+        dff_times = dff_tot{iobj, 3}(1, :);
+        % Normalizing:
+        dff_stim = 2 * (dff_stim - mean(dff_stim)) / std(dff_stim);
+        dff_stim = dff_stim - median(dff_stim);
+        dff_plot = (dff_plot - mean(dff_stim)) / std(dff_plot) -1;
+        dff_plot = dff_plot - median(dff_plot);
+        % Plotting:        
+        subplot(4, 1, 2+iobj)
+        hold on
+        plot(dff_times, dff_stim)
+        plot(dff_times, dff_plot)
+    end
             
  
         
