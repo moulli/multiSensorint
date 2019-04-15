@@ -1,4 +1,4 @@
-function [tau_rises, tau_decays] = estimate_time_constants_HDF5(h5_path, varargin)
+function [tau_rises, tau_decays] = a2func_estimate_time_constants_HDF5(h5_path, varargin)
 % Use Tubiana's BSD algorithm to estimate GCaMP time constants.
 
     % Parallel BSD
@@ -96,6 +96,7 @@ function [tau_rises, tau_decays] = estimate_time_constants_HDF5(h5_path, varargi
 
         tic
         fprintf('Estimating time constants... ');
+        image(dff, 'CDataMapping', 'scaled')
         switch par
             case 'y'
                 [~, ~, ~, Pphys] = pBSD(dff, Oalg, Palg);
