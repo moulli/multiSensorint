@@ -16,4 +16,8 @@ ptemp = '/home/ljp/Science/GeoffreysComputer/Projects/RLS/Data/2019-03-26/Run 09
 %% Program defines constants based on tectum region:
 
 fprintf('Launching algorithm. \n');
-[taur, taud] = a2func_estimate_time_constants_HDF5(ptemp, 'labels', 114, 'parfor', 'n');
+[taur, taud] = a2func_estimate_time_constants_HDF5(ptemp, 'labels', 106, 'parfor', 'n');
+
+
+
+%% Taking 

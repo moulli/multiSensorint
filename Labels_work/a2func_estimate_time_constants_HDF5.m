@@ -96,7 +96,6 @@ function [tau_rises, tau_decays] = a2func_estimate_time_constants_HDF5(h5_path, 
 
         tic
         fprintf('Estimating time constants... ');
-        image(dff, 'CDataMapping', 'scaled')
         switch par
             case 'y'
                 [~, ~, ~, Pphys] = pBSD(dff, Oalg, Palg);

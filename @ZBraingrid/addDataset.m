@@ -35,7 +35,7 @@ function addDataset(obj, dataset_in, indic_in)
     tic
     if indic_in == 1
         if size(obj.Zneuron, 4) > 1 || sum(obj.Znumber(:)) ~= 0 
-            fprintf('\nLaunching function addDataset, attribute of ZBraingrid class. %.0f dataset(s) already added.\n', size(obj.Zneuron, 4));
+            fprintf('\nLaunching function addDataset, attribute of ZBraingrid class. %.0f dataset(s) already added.\n', obj.gridsize(4));
         else
             fprintf('\nLaunching function addDataset, attribute of ZBraingrid class. First dataset.\n');
         end
