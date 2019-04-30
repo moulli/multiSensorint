@@ -28,8 +28,8 @@ function [out, variables, perinf] = h5stimreg(h5file, Params)
 %         iterations done.
 %       --Params.dffnorm (default: "none"): normalization of the dff data.
 %         Can either be "none" (nothing is done), "center" (mean is 
-%         subtracted), or "normalize" (mean subtracted and then division by
-%         standard deviation).
+%         subtracted), "centermode" (mode is subtracted), or "normalize" 
+%         (mean subtracted and then division by standard deviation).
 %       --Params.stimnorm (default: "none"): normalization for stimulus.
 %
 %
@@ -72,13 +72,17 @@ function [out, variables, perinf] = h5stimreg(h5file, Params)
         dffn = dff;
     elseif Params.dffnorm == "center"
         dffn = dff - mean(dff, 2);
+    elseif Params.dffnorm == "centermode"
+        dffn = dff - mode(dff, 2);
     elseif Params.dffnorm == "normalize"
         dffn = (dff - mean(dff, 2)) ./ std(dff, [], 2);
     end
     if ~isfield(Params, 'stimnorm') || Params.stimnorm == "none"
         stimn = stim;
     elseif Params.stimnorm == "center"
-        stimn = stim - mean(stim, 2);
+        stimn = stim - mean(stim);
+    elseif Params.stimnorm == "centermode"
+        stimn = stim - mode(stim);
     elseif Params.stimnorm == "normalize"
         stimn = (stim - mean(stim)) ./ std(stim);
     end
@@ -152,7 +156,8 @@ function [out, variables, perinf] = h5stimreg(h5file, Params)
     posStim = stimn .* (stimn > 0);
     negStim = stimn .* (stimn < 0);
     diff = gradient(stimn);
-    diffn = (diff - mean(diff)) ./ std(diff);
+    %diffn = (diff - mean(diff)) ./ std(diff); % No normalization for this version
+    diffn = diff;
     posDiff = diffn .* (diffn > 0);
     negDiff = diffn .* (diffn < 0);
     % Convolving with an exponential kernel:
@@ -163,7 +168,7 @@ function [out, variables, perinf] = h5stimreg(h5file, Params)
     pDKern = convInd(posDiff, expkern, 1, ntime);
     nDKern = convInd(negDiff, expkern, 1, ntime);
     % Final variables:
-    variables = [ones(size(pSKern')), pSKern', nSKern', pDKern', nDKern'];
+    variables = [pSKern', nSKern', pDKern', nDKern', ones(size(pSKern'))];
     
     
     %% Multilinear regression:
@@ -172,6 +177,7 @@ function [out, variables, perinf] = h5stimreg(h5file, Params)
     fprintf('\nInitialization done in %.3f seconds, starting loop for each neuron. \n\n', toc);
     % Main loop:
     warning('off')
+    lprint = 0;
     for i = 1:nneu
         [b, ~, r, ~, stats] = regress(dffn(i, :)', variables);
         out.coef(i, :) = b(2:end)';
@@ -183,7 +189,8 @@ function [out, variables, perinf] = h5stimreg(h5file, Params)
         out.samplevariance(i) = stats(4);
         % Indication:
         if mod(i, 5000) == 0
-            fprintf('Iteration %.0f out of %.0f, done in %.3f seconds. \n', [i, nneu, toc]);
+            fprintf(repmat('\b', 1, lprint));
+            lprint = fprintf('Iteration %.0f out of %.0f, done in %.3f seconds. \n', [i, nneu, toc]);
         end
     end     
     warning('on')

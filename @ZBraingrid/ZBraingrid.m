@@ -11,7 +11,7 @@ classdef ZBraingrid < handle
     %% Properties:
     
     % Private access:
-    properties (SetAccess = private)
+    properties %(SetAccess = private)
         
         %% Global information:
         % Method employed, simple string, and orientation:
