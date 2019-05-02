@@ -29,7 +29,7 @@ addcom = ["Positive stimulus (regressor 1)";
           "F-statistic"];
 
 % Main loop:
-for i = 49:51 %1:length(dirdata)
+for i = 1:length(dirdata)
     
     % Informations on file:
     ntemp = dirdata(i).name; % name of the file
