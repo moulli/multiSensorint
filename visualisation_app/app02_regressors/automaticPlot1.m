@@ -1,6 +1,7 @@
 function automaticPlot1(app)
 % Function that will plot whenever 'Compare two sets' is selected.
 
+
     % Recovers values:
     obj1 = app.set1;
     obj2 = app.set2;
@@ -103,5 +104,6 @@ function automaticPlot1(app)
         rotate3d(app.UIAxes,'off')
         zoom(app.UIAxes,'off')
     end 
+    
     
 end

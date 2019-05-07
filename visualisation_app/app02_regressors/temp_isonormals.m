@@ -39,6 +39,7 @@ view(3)
 
 
 temp = zgrid005reg(2);
+temp = flatten(subset(zgrid005reg, 'vestibular'));
 temp = gaussianize(temp, 0.01);
 x = (temp.xgrid(2:end) + temp.xgrid(1:end-1)) / 2;
 y = (temp.ygrid(2:end) + temp.ygrid(1:end-1)) / 2;
@@ -55,6 +56,7 @@ set(p1, 'FaceColor', 'red', 'EdgeColor', 'none', 'FaceAlpha', 0.5); % set the co
 daspect([1,1,1])
 view(3); axis tight
 camlight; lighting gouraud
+hold off
 isovalue2 = quantile(temp.Zcorrel, 0.95);
 surf2 = isosurface(X, Y, Z, val, isovalue2);
 p2 = patch(surf2);
