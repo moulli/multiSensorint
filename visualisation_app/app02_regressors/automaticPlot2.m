@@ -2,8 +2,8 @@ function automaticPlot2(app)
 % Function that will plot whenever 'Compare two sets' is selected.
 
 
-    % IMPORTANT: CLEAR UIAXES
-    cla(app.UIAxes)
+%     % IMPORTANT: CLEAR UIAXES
+%     cla(app.UIAxes)
     
     % Recovers values:
     if app.whichset == 1
