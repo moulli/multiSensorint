@@ -144,7 +144,10 @@ classdef ZBraingrid < handle
         binaryComp(obj1, obj2, blim); % binary comparison between two objects 
         binaryComp_bestneurons(obj1, obj2, bestneurons); % binary comparison keeping fixed number of neurons
         binaryComp_plotDFF(obj1, obj2, bestneurons); % same as bestneurons, but then select points and plot DFF
-        [lab_coords, lab_labels] = getLabels(obj, ZBGlabels_path); % obtain labels from ZBG object
+        
+        %% Get info from ZBG:
+        labels = getLabels(obj); % obtain labels from ZBG object
+        coord = get3Dcoord(obj); % return (nx3) matrix with coordinates
         
     end
     

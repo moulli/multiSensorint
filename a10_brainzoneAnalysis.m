@@ -1,5 +1,8 @@
 clear; close all; clc
 
+% Import ZBraingrid object:
+addpath(genpath('/home/ljp/Science/Hippolyte/multiSensorint'))
+
 % Need to import ind2labels which links indexes from ZBraingrid object to
 % actual labels, and bestneurons_persubset which was computed with a script
 % in the app, and return the 5% most active neurons for vestibular sine,
@@ -65,13 +68,32 @@ regtemp = regionslabels ./ sum(regionslabels, 2);
 bar(regtemp, 'stacked')
 
 figure
-bar(regtemp, 'stacked')
-title('Proportion of bimodal and unimodal neurons in several regions for 5000 most active neurons, auditory and vestibular (sine) stimuli', 'Interpreter', 'latex')
-axis([-0.5, 9.5, 0, 1.2])
-legend('Multimodal', 'Only auditory', 'Only sine vestibular')
-xticklabels({'Pretectum', 'Tegmentum', 'Cerebellum', 'Rhombomere 1', 'Rhombomere 5', 'Rhombomere 6', 'Rhombomere 7', 'Tangential Vestibular Nucleus'})
+% bar(regtemp, 'stacked')
+H = bar(regtemp, 'stacked');
+colorSet = [];
+myColors = [0, 0, 0; 0, 1, 0; 1, 0, 1];
+for i = 1:3
+    myColor = myColors(i, :);
+    colorSet = [colorSet myColor];
+    H(i).FaceColor = 'flat';
+    H(i).CData = myColor;
+end
+% title('Proportion of bimodal and unimodal neurons in several regions for 5000 most active neurons, auditory and vestibular (sine) stimuli', 'Interpreter', 'latex')
+axis([-0.5, 9.5, 0, 1.1])
+xticklabels({'Pretectum', 'Tegmentum', 'Cerebellum', 'Rhombomere 1', 'Rhombomere 5', 'Rhombomere 6', 'Rhombomere 7', 'Vestibular Nucleus'})
 xtickangle(45)
 yticks([0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1])
+FontSize = 20;
+xl = get(gca,'XLabel');
+xlFontSize = get(xl,'FontSize');
+xAX = get(gca,'XAxis');
+set(xAX,'FontSize', FontSize)
+set(xl, 'FontSize', xlFontSize);
+yl = get(gca,'YLabel');
+ylFontSize = get(yl,'FontSize');
+yAY = get(gca,'YAxis');
+set(yAY,'FontSize', FontSize)
+set(yl, 'FontSize', ylFontSize);
 
 
 
