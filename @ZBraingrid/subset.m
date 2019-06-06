@@ -25,7 +25,7 @@ function onew = subset(obj, subset)
 
     keepsub = [];
     for i = 1:length(obj.comments)
-        if ~isempty(strfind(obj.comments{i}, subset))
+        if ~isempty(strfind(lower(obj.comments{i}), lower(subset)))
             keepsub = [keepsub, i];
         end
     end
