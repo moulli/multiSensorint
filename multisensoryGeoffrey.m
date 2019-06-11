@@ -146,6 +146,23 @@ clean(z5msg);
 
 pathcreated5msg = fullfile('/home/ljp/Science/Hippolyte', 'z5msg.mat');
 save(pathcreated5msg, 'z5msg')
+
+
+
+
+
+app.zoutlines = zoutlines005;
+app.OutplotS = [];
+
+xplot = (app.zoutlines.xgrid(2:end)' + app.zoutlines.xgrid(1:end-1)') / 2;
+yplot = (app.zoutlines.ygrid(2:end)' + app.zoutlines.ygrid(1:end-1)') / 2;
+zplot = (app.zoutlines.zgrid(2:end)' + app.zoutlines.zgrid(1:end-1)') / 2;
+tempOut = zeros(0, 3);
+for i = 1
+    [xcoord, ycoord, zcoord] = ind2sub(app.zoutlines(i).gridsize(1:3), app.zoutlines(i).Zindex);
+    tempOut = cat(1, tempOut, [xplot(xcoord), yplot(ycoord), zplot(zcoord)]);
+end
+app.OutplotS = unique(tempOut, 'rows');
                                    
                                    
                                    

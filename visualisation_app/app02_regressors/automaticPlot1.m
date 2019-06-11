@@ -1,4 +1,4 @@
-function automaticPlot1(app)
+function ptsout = automaticPlot1(app)
 % Function that will plot whenever 'Compare two sets' is selected.
 
 
@@ -127,10 +127,16 @@ function automaticPlot1(app)
     z_o2 = t_o2_temp(:, 3);
 
     % Plotting:
-    scatter3(app.UIAxes, x_both, y_both, z_both, 30, [0, 0, 0], 'filled');
+    scatter3(app.UIAxes, x_both, y_both, z_both, app.cmrksize, [0, 0, 0], 'filled')
     hold(app.UIAxes, 'on')
     scatter3(app.UIAxes, x_o1, y_o1, z_o1, app.mrksize, [0, 1, 0], 'filled')
     scatter3(app.UIAxes, x_o2, y_o2, z_o2, app.mrksize, [1, 0, 1], 'filled')
+    
+    % Points to be passed to automaticPlot3:
+    ybth = (y_both <= app.mypoint(2)+0.01 & app.mypoint(2)-0.01 <= y_both);
+    yo1 = (y_o1 <= app.mypoint(2)+0.01 & app.mypoint(2)-0.01 <= y_o1);
+    yo2 = (y_o2 <= app.mypoint(2)+0.01 & app.mypoint(2)-0.01 <= y_o2);
+    ptsout = {[x_both(ybth), z_both(ybth)], [x_o1(yo1), z_o1(yo1)], [x_o2(yo2), z_o2(yo2)]};
     
     
 end

@@ -145,9 +145,10 @@ classdef ZBraingrid < handle
         binaryComp_bestneurons(obj1, obj2, bestneurons); % binary comparison keeping fixed number of neurons
         binaryComp_plotDFF(obj1, obj2, bestneurons); % same as bestneurons, but then select points and plot DFF
         
-        %% Get info from ZBG:
+        %% Get simple info from ZBG:
         labels = getLabels(obj); % obtain labels from ZBG object
         coord = get3Dcoord(obj); % return (nx3) matrix with coordinates
+        scat3(obj); % simple scatter3 plot
         
     end
     

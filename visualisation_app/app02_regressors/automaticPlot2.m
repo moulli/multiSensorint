@@ -1,5 +1,5 @@
 function automaticPlot2(app)
-% Function that will plot whenever 'Compare two sets' is selected.
+% Function that will plot whenever 'Check densities of both sets' is selected.
 
 
 %     % IMPORTANT: CLEAR UIAXES
