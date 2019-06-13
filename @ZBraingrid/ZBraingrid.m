@@ -116,7 +116,7 @@ classdef ZBraingrid < handle
         
         %% Indexing operations:
         onew = subsref(obj, Sin); % classic numeric indexing
-        onew = subset(obj, subset); % based on a comment keyword research
+        [onew, keepsub] = subset(obj, subset); % based on a comment keyword research
         ind = end(obj, k, n); % defines 'end' operator for indexing
         
         %% Saving:
@@ -149,6 +149,7 @@ classdef ZBraingrid < handle
         labels = getLabels(obj); % obtain labels from ZBG object
         coord = get3Dcoord(obj); % return (nx3) matrix with coordinates
         scat3(obj); % simple scatter3 plot
+        ind = ZBGsub2ind(obj, coord); % get closest index from coordinates
         
     end
     

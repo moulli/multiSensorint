@@ -24,12 +24,24 @@ function closestPoints(app)
     indsel1 = sub2ind(obj1.gridsize, intsel1x, intsel1y, intsel1z);
     app.dexample1 = d1temp(indsel1 == (obj1.Zindex - (d1temp-1).*prod(obj1.gridsize(1:3))));
     % Changing drop down:
+    oldDrop1 = app.Examplefromset1DropDown.Items;
+    oldVal1 = app.Examplefromset1DropDown.Value;
     app.Examplefromset1DropDown.Items = {};
     for i = 1:length(app.dexample1)
-        app.Examplefromset1DropDown.Items = [app.Examplefromset1DropDown.Items, num2str(app.dexample1(i))];
+        app.Examplefromset1DropDown.Items = [app.Examplefromset1DropDown.Items, num2str(app.zindex1(app.dexample1(i)))];
     end
-    app.Examplefromset1DropDown.Value = app.Examplefromset1DropDown.Items{1};
-    app.choicex1 = str2double(app.Examplefromset1DropDown.Items{1});
+    if isequal(oldDrop1, app.Examplefromset1DropDown.Items)
+        % Change axis of point of interest:
+        for i = 1:length(app.Examplefromset1DropDown.Items)
+            if string(app.Examplefromset1DropDown.Items{i}) == string(oldVal1)
+                break
+            end
+        end
+        app.choicex1 = i;
+        app.Examplefromset1DropDown.Value = oldVal1;
+    else
+        app.choicex1 = 1;
+    end
 
     % otemp2 closest point:
     [x2temp, y2temp, z2temp, d2temp] = ind2sub(obj2.gridsize, obj2.Zindex);
@@ -44,11 +56,23 @@ function closestPoints(app)
     indsel2 = sub2ind(obj2.gridsize, intsel2x, intsel2y, intsel2z);
     app.dexample2 = d2temp(indsel2 == (obj2.Zindex - (d2temp-1).*prod(obj2.gridsize(1:3))));
     % Changing drop down:
+    oldDrop2 = app.Examplefromset2DropDown.Items;
+    oldVal2 = app.Examplefromset2DropDown.Value;
     app.Examplefromset2DropDown.Items = {};
     for i = 1:length(app.dexample2)
-        app.Examplefromset2DropDown.Items = [app.Examplefromset2DropDown.Items, num2str(app.dexample2(i))];
+        app.Examplefromset2DropDown.Items = [app.Examplefromset2DropDown.Items, num2str(app.zindex2(app.dexample2(i)))];
     end
-    app.Examplefromset2DropDown.Value = app.Examplefromset2DropDown.Items{1};
-    app.choicex2 = str2double(app.Examplefromset2DropDown.Items{1});
+    if isequal(oldDrop2, app.Examplefromset2DropDown.Items)
+        % Change axis of point of interest:
+        for i = 1:length(app.Examplefromset2DropDown.Items)
+            if string(app.Examplefromset2DropDown.Items{i}) == string(oldVal2)
+                break
+            end
+        end
+        app.choicex2 = i;
+        app.Examplefromset2DropDown.Value = oldVal2;
+    else
+        app.choicex2 = 1;
+    end
 
 end
