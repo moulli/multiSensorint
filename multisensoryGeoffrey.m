@@ -42,11 +42,11 @@ onesie = ones(size(vest)./[3, 1]);
 dff1 = dff(:, 1:len/3);
 v1 = vest(1:len/3);
 v1 = [onesie, v1 .* (v1 > 0), v1 .* (v1 < 0), gradient(v1) .* (gradient(v1) > 0), gradient(v1) .* (gradient(v1) < 0)];
-% First batch (just vest):
+% Second batch (just vest):
 dff2 = dff(:, len/3+1:2*len/3);
 v2 = vest(len/3+1:2*len/3);
 v2 = [onesie, v2 .* (v2 > 0), v2 .* (v2 < 0), gradient(v2) .* (gradient(v2) > 0), gradient(v2) .* (gradient(v2) < 0)];
-% First batch (just visual):
+% Third batch (just visual):
 dff3 = dff(:, 2*len/3+1:end);
 v3 = visu(2*len/3+1:end);
 v3 = [onesie, v3 .* (v3 > 0), v3 .* (v3 < 0), gradient(v3) .* (gradient(v3) > 0), gradient(v3) .* (gradient(v3) < 0)];
@@ -124,7 +124,7 @@ stemp.orientation = 'RAS';
 comment = "3rd third + Visual without vestibular pattern, regression against visual only";
 regcoef = zeros(size(dfftemp, 1), 5);
 for i = 1:size(dfftemp, 1)
-    [b, ~, ~, ~, stats] = regress(dfftemp(i, :)', v1);
+    [b, ~, ~, ~, stats] = regress(dfftemp(i, :)', v3);
     regcoef(i, 1:4) = b(2:end)';
     regcoef(i, end) = stats(2);
 end
@@ -151,18 +151,18 @@ save(pathcreated5msg, 'z5msg')
 
 
 
-app.zoutlines = zoutlines005;
-app.OutplotS = [];
-
-xplot = (app.zoutlines.xgrid(2:end)' + app.zoutlines.xgrid(1:end-1)') / 2;
-yplot = (app.zoutlines.ygrid(2:end)' + app.zoutlines.ygrid(1:end-1)') / 2;
-zplot = (app.zoutlines.zgrid(2:end)' + app.zoutlines.zgrid(1:end-1)') / 2;
-tempOut = zeros(0, 3);
-for i = 1
-    [xcoord, ycoord, zcoord] = ind2sub(app.zoutlines(i).gridsize(1:3), app.zoutlines(i).Zindex);
-    tempOut = cat(1, tempOut, [xplot(xcoord), yplot(ycoord), zplot(zcoord)]);
-end
-app.OutplotS = unique(tempOut, 'rows');
+% app.zoutlines = zoutlines005;
+% app.OutplotS = [];
+% 
+% xplot = (app.zoutlines.xgrid(2:end)' + app.zoutlines.xgrid(1:end-1)') / 2;
+% yplot = (app.zoutlines.ygrid(2:end)' + app.zoutlines.ygrid(1:end-1)') / 2;
+% zplot = (app.zoutlines.zgrid(2:end)' + app.zoutlines.zgrid(1:end-1)') / 2;
+% tempOut = zeros(0, 3);
+% for i = 1
+%     [xcoord, ycoord, zcoord] = ind2sub(app.zoutlines(i).gridsize(1:3), app.zoutlines(i).Zindex);
+%     tempOut = cat(1, tempOut, [xplot(xcoord), yplot(ycoord), zplot(zcoord)]);
+% end
+% app.OutplotS = unique(tempOut, 'rows');
                                    
                                    
                                    

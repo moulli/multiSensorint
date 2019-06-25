@@ -4,7 +4,7 @@ function automaticPlot3(app)
     % Plotting classical bi-comparison:
     hold(app.UIAxes, 'on')
     scatter3(app.UIAxes, app.mypoint(1), app.mypoint(2), app.mypoint(3), 60, [1, 0.25, 0.25], 'd', 'filled', 'MarkerEdgeColor', [0.3, 0.3, 0.3], 'LineWidth', 1.5)
-    patch(app.UIAxes, [app.alim(1) app.alim(1) 0, 0], app.mypoint(2)*ones(1, 4), [app.alim(3) 0, 0, app.alim(3)], [app.alim(1) app.alim(1) 0, 0], 'FaceColor', [0.6, 0.6, 0.6], 'FaceAlpha', 0.3)
+    patch(app.UIAxes, [app.alim(1), app.alim(1), 0, 0], app.mypoint(2)*ones(1, 4), [app.alim(3), 0, 0, app.alim(3)], [app.alim(1), app.alim(1), 0, 0], 'FaceColor', [0.75, 0.75, 0.75], 'FaceAlpha', 0.2)
     ptsout = automaticPlot1(app);
     
     % Updating uiaxes 2:

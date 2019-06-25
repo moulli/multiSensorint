@@ -133,9 +133,9 @@ function ptsout = automaticPlot1(app)
     scatter3(app.UIAxes, x_o2, y_o2, z_o2, app.mrksize, [1, 0, 1], 'filled')
     
     % Points to be passed to automaticPlot3:
-    ybth = (y_both <= app.mypoint(2)+0.01 & app.mypoint(2)-0.01 <= y_both);
-    yo1 = (y_o1 <= app.mypoint(2)+0.01 & app.mypoint(2)-0.01 <= y_o1);
-    yo2 = (y_o2 <= app.mypoint(2)+0.01 & app.mypoint(2)-0.01 <= y_o2);
+    ybth = (y_both <= app.mypoint(2)+0.005 & app.mypoint(2)-0.005 <= y_both);
+    yo1 = (y_o1 <= app.mypoint(2)+0.005 & app.mypoint(2)-0.005 <= y_o1);
+    yo2 = (y_o2 <= app.mypoint(2)+0.005 & app.mypoint(2)-0.005 <= y_o2);
     ptsout = {[x_both(ybth), z_both(ybth)], [x_o1(yo1), z_o1(yo1)], [x_o2(yo2), z_o2(yo2)]};
     
     

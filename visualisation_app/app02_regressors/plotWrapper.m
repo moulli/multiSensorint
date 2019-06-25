@@ -46,17 +46,23 @@ function plotWrapper(app)
     % Plot contours:
     if app.PlotXYcontoursofzonesCheckBox.Value == true
         for i = 1:size(app.OutplotC, 1)
-            plot3(app.UIAxes, app.OutplotC{i, 1}(:, 1), app.OutplotC{i, 1}(:, 2), app.OutplotC{i, 1}(:, 3), 'Color', app.acolor(i, :), 'LineWidth', 2)
+            for k = 1:length(app.OutplotC{i, 1})
+                plot3(app.UIAxes, app.OutplotC{i, 1}{k}(:, 1), app.OutplotC{i, 1}{k}(:, 2), app.OutplotC{i, 1}{k}(:, 3), 'Color', app.acolor(i, :), 'LineWidth', 2)
+            end
         end
     end
     if app.PlotYZcontoursofzonesCheckBox.Value == true
         for i = 1:size(app.OutplotC, 1)
-            plot3(app.UIAxes, app.OutplotC{i, 2}(:, 1), app.OutplotC{i, 2}(:, 2), app.OutplotC{i, 2}(:, 3), 'Color', app.acolor(i, :), 'LineWidth', 2)
+            for k = 1:length(app.OutplotC{i, 2})
+                plot3(app.UIAxes, app.OutplotC{i, 2}{k}(:, 1), app.OutplotC{i, 2}{k}(:, 2), app.OutplotC{i, 2}{k}(:, 3), 'Color', app.acolor(i, :), 'LineWidth', 2)
+            end
         end
     end         
     if app.PlotXZcontoursofzonesCheckBox.Value == true
         for i = 1:size(app.OutplotC, 1)
-            plot3(app.UIAxes, app.OutplotC{i, 3}(:, 1), app.OutplotC{i, 3}(:, 2), app.OutplotC{i, 3}(:, 3), 'Color', app.acolor(i, :), 'LineWidth', 2)
+            for k = 1:length(app.OutplotC{i, 3})
+                plot3(app.UIAxes, app.OutplotC{i, 3}{k}(:, 1), app.OutplotC{i, 3}{k}(:, 2), app.OutplotC{i, 3}{k}(:, 3), 'Color', app.acolor(i, :), 'LineWidth', 2)
+            end
         end
     end
 

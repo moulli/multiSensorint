@@ -32,13 +32,18 @@ function plot_DFF(app)
         zneutemp(zneutemp == 0) = [];
         % Accessing HDF5:
         ptemp = char(obj1.paths(1));
-        %stim_path = h5readatt(ptemp, '/Metadata', 'Stimulus path');
         dff = h5read(ptemp, '/Data/Brain/Analysis/DFF');
         dff = mean(dff(zneutemp, :), 1);
-        stim = h5read(ptemp, '/Data/Stimulus/Vestibular/tiltAngle'); %stim_path);
+        % Plotting stimulus:
+        for j = 1:size(app.epath1, 1)
+            if isequal(app.StimulusDropDown.Value, app.epath1{j, 2})
+                break
+            end
+        end
+        stim = h5read(ptemp, fullfile(app.epath1{j, 1}, app.epath1{j, 2}));
         times = h5read(ptemp, '/Data/Brain/Times');
         % Normalizing:
-        stim = stim / std(stim) * std(dff);
+        stim = stim / std(stim(~isnan(stim))) * std(dff(~isnan(dff)));
         % Plotting:
         plot(app.UIAxes3, times, stim)
         hold(app.UIAxes3, 'on')
@@ -59,13 +64,18 @@ function plot_DFF(app)
         zneutemp(zneutemp == 0) = [];
         % Accessing HDF5:
         ptemp = char(obj2.paths(1));
-        %stim_path = h5readatt(ptemp, '/Metadata', 'Stimulus path');
         dff = h5read(ptemp, '/Data/Brain/Analysis/DFF');
         dff = mean(dff(zneutemp, :), 1);
-        stim = h5read(ptemp, '/Data/Stimulus/Vestibular/tiltAngle'); %stim_path);
+        % Plotting stimulus:
+        for j = 1:size(app.epath2, 1)
+            if isequal(app.StimulusDropDown_2.Value, app.epath2{j, 2})
+                break
+            end
+        end
+        stim = h5read(ptemp, fullfile(app.epath2{j, 1}, app.epath2{j, 2}));
         times = h5read(ptemp, '/Data/Brain/Times');
         % Normalizing:
-        stim = stim / std(stim) * std(dff);
+        stim = stim / std(stim(~isnan(stim))) * std(dff(~isnan(dff)));
         % Plotting:
         plot(app.UIAxes4, times, stim)
         hold(app.UIAxes4, 'on')

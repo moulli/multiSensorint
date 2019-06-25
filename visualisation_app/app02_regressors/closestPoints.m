@@ -42,6 +42,26 @@ function closestPoints(app)
     else
         app.choicex1 = 1;
     end
+    % Updating path to stimulus:
+    h5info1 = h5info(char(app.zset1(app.choicex1).paths));
+    for i = 1:size(h5info1.Groups.Groups, 1)
+        if h5info1.Groups.Groups(i).Name == "/Data/Stimulus"
+            break
+        end
+    end
+    epath = cell(0, 2);
+    for j1 = 1:size(h5info1.Groups.Groups(i).Groups, 1)
+        numpath = size(h5info1.Groups.Groups(i).Groups(j1).Datasets, 1);
+        for j2 = 1:numpath
+            eptemp = {h5info1.Groups.Groups(i).Groups(j1).Name, h5info1.Groups.Groups(i).Groups(j1).Datasets(j2).Name};
+            epath = [epath; eptemp];
+        end
+    end
+    if ~isequal(epath, app.epath1)
+        app.epath1 = epath;
+        app.StimulusDropDown.Items = app.epath1(:, 2);
+        app.StimulusDropDown.Value = app.epath1(1, 2);
+    end
 
     % otemp2 closest point:
     [x2temp, y2temp, z2temp, d2temp] = ind2sub(obj2.gridsize, obj2.Zindex);
@@ -73,6 +93,26 @@ function closestPoints(app)
         app.Examplefromset2DropDown.Value = oldVal2;
     else
         app.choicex2 = 1;
+    end
+    % Updating path to stimulus:
+    h5info2 = h5info(char(app.zset2(app.choicex2).paths));
+    for i = 1:size(h5info2.Groups.Groups, 1)
+        if h5info2.Groups.Groups(i).Name == "/Data/Stimulus"
+            break
+        end
+    end
+    epath = cell(0, 2);
+    for j1 = 1:size(h5info2.Groups.Groups(i).Groups, 1)
+        numpath = size(h5info2.Groups.Groups(i).Groups(j1).Datasets, 1);
+        for j2 = 1:numpath
+            eptemp = {h5info2.Groups.Groups(i).Groups(j1).Name, h5info2.Groups.Groups(i).Groups(j1).Datasets(j2).Name};
+            epath = [epath; eptemp];
+        end
+    end
+    if ~isequal(epath, app.epath2)
+        app.epath2 = epath;
+        app.StimulusDropDown_2.Items = app.epath2(:, 2);
+        app.StimulusDropDown_2.Value = app.epath2(1, 2);
     end
 
 end
