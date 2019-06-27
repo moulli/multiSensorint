@@ -147,9 +147,11 @@ classdef ZBraingrid < handle
         
         %% Get simple info from ZBG:
         labels = getLabels(obj); % obtain labels from ZBG object
-        coord = get3Dcoord(obj); % return (nx3) matrix with coordinates
+        [coord, subsets] = get3Dcoord(obj); % return (nx3) matrix with coordinates
         scat3(obj); % simple scatter3 plot
-        ind = ZBGsub2ind(obj, coord); % get closest index from coordinates
+        ind = ZBGsub2ind(obj, coord); % get closest grid index from coord
+        [coordout, subsets, dist] = ZBGclosest(obj, coord); % get closest obj point from coord
+        coord = ind2coord(obj, index); % returns coordinates for index in obj grid
         
     end
     

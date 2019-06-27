@@ -1,4 +1,4 @@
-function coord = get3Dcoord(obj)
+function [coord, subsets] = get3Dcoord(obj)
 % Function that will return a (n x 3) matrix, with ZBG indexes as rows, and
 % x, y, and z coordinates as columns. Function will analyze each dataset of
 % ZBG object and return coordinates concatenated along first dimension.
@@ -7,10 +7,10 @@ function coord = get3Dcoord(obj)
     xind = [];
     yind = [];
     zind = [];
-    [~, ~, ~, dind] = ind2sub(obj.gridsize, obj.Zindex);
+    [~, ~, ~, subsets] = ind2sub(obj.gridsize, obj.Zindex);
     for i = 1:obj.gridsize(4)
         reindexing = (i-1) * prod(obj.gridsize(1:3));
-        [xtemp, ytemp, ztemp] = ind2sub(obj.gridsize(1:3), (obj.Zindex(dind == i)-reindexing));
+        [xtemp, ytemp, ztemp] = ind2sub(obj.gridsize(1:3), (obj.Zindex(subsets == i)-reindexing));
         xind = cat(1, xind, xtemp);
         yind = cat(1, yind, ytemp);
         zind = cat(1, zind, ztemp);

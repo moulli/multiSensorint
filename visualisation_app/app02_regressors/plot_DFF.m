@@ -2,8 +2,8 @@ function plot_DFF(app)
 % Plots averaged DFF for sets 1 and 2, respectively in UIAxes3 and UIAxes4.
 
     % Recovering objects and keeping good sets:
-    obj1 = app.zset1(app.choicex1);
-    obj2 = app.zset2(app.choicex2);
+    obj1 = app.zset1(app.dexample1(app.choicex1));
+    obj2 = app.zset2(app.dexample2(app.choicex2));
 
 %     % Grid coordinates:
 %     xtemp = (obj1.xgrid(2:end)' + obj1.xgrid(1:end-1)') / 2;
@@ -45,7 +45,11 @@ function plot_DFF(app)
         % Normalizing:
         stim = stim / std(stim(~isnan(stim))) * std(dff(~isnan(dff)));
         % Plotting:
-        plot(app.UIAxes3, times, stim)
+        try
+            plot(app.UIAxes3, times, stim)
+        catch
+            msgbox('Cannot plot this stimuli.')
+        end
         hold(app.UIAxes3, 'on')
         plot(app.UIAxes3, times, dff)
         title(app.UIAxes3, 'Stimulus (blue) and DFF(red) against time for set 1')
@@ -77,7 +81,11 @@ function plot_DFF(app)
         % Normalizing:
         stim = stim / std(stim(~isnan(stim))) * std(dff(~isnan(dff)));
         % Plotting:
-        plot(app.UIAxes4, times, stim)
+        try
+            plot(app.UIAxes4, times, stim)
+        catch
+            msgbox('Cannot plot this stimuli.')
+        end
         hold(app.UIAxes4, 'on')
         plot(app.UIAxes4, times, dff)
         title(app.UIAxes4, 'Stimulus (blue) and DFF(red) against time for set 2')
