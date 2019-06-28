@@ -4,21 +4,7 @@ function plot_DFF(app)
     % Recovering objects and keeping good sets:
     obj1 = app.zset1(app.dexample1(app.choicex1));
     obj2 = app.zset2(app.dexample2(app.choicex2));
-
-%     % Grid coordinates:
-%     xtemp = (obj1.xgrid(2:end)' + obj1.xgrid(1:end-1)') / 2;
-%     ytemp = (obj1.ygrid(2:end)' + obj1.ygrid(1:end-1)') / 2;
-%     ztemp = (obj1.zgrid(2:end)' + obj1.zgrid(1:end-1)') / 2;
-% 
-%     % Subs to indexes and closest points:
-%     intsel1x = find(app.selpoint1(1) == xtemp);
-%     intsel1y = find(app.selpoint1(2) == ytemp);
-%     intsel1z = find(app.selpoint1(3) == ztemp);
-%     indpt1 = sub2ind(obj1.gridsize, intsel1x, intsel1y, intsel1z);
-%     intsel2x = find(app.selpoint2(1) == xtemp);
-%     intsel2y = find(app.selpoint2(2) == ytemp);
-%     intsel2z = find(app.selpoint2(3) == ztemp);
-%     indpt2 = sub2ind(obj2.gridsize, intsel2x, intsel2y, intsel2z);
+    
 
     % Index of selpoint1 and selpoint2:
     indpt1 = ZBGsub2ind(obj1, app.selpoint1);

@@ -1,6 +1,9 @@
 function spikes = findSpikes(signal)
 % Finds spikes in a signal and return indexes of spikes points.
 
+    %% Get rid of nan values:
+    signal(isnan(signal)) = 0;
+
     %% Subtract mode of signal:
     signal = signal - mode(signal);
     
