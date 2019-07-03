@@ -77,19 +77,28 @@ function ptsout = automaticPlot1(app)
     else
         sgrid = obj1.gridsize(1:3);
     end
+    otemp1 = flatten(obj1);
+    otemp2 = flatten(obj2);
 
     % Binarization:
-    otemp1 = flatten(obj1);
     grid1 = zeros(sgrid);
     [~, ind_correl1] = sort(otemp1.Zcorrel, 'descend');
     ind_correl1 = ind_correl1(1:bestneurons(1));
-    grid1(otemp1.Zindex(ind_correl1)) = 1;
-    otemp2 = flatten(obj2);
     grid2 = zeros(sgrid);
     [~, ind_correl2] = sort(otemp2.Zcorrel, 'descend');
     ind_correl2 = ind_correl2(1:bestneurons(2));
-    grid2(otemp2.Zindex(ind_correl2)) = 2;
+    % Changing indexes if only common neurons are required:
+    indkeep1 = otemp1.Zindex(ind_correl1);
+    indkeep2 = otemp2.Zindex(ind_correl2);
+    if app.PlotonlycommongridpointsCheckBox.Value == true
+        [~, ind_correl1] = intersect(indkeep1, otemp2.Zindex);
+        [~, ind_correl2] = intersect(indkeep2, otemp1.Zindex);
+        indkeep1 = indkeep1(ind_correl1);
+        indkeep2 = indkeep2(ind_correl2);
+    end    
     % Summing:
+    grid1(indkeep1) = 1;
+    grid2(indkeep2) = 2;
     gridt = grid1 + grid2; find(gridt ~= 0);
 
     % Defining points:
