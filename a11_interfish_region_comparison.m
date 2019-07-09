@@ -11,13 +11,11 @@ load('/home/ljp/Science/Hippolyte/multiSensorint/visualisation_app/app02_regress
 %% Isolating subsets:
 
 zbgF = subset(zgrid005reg, 'F-stat');
-zbg = cell(5, 1);
-zbg{1} = subset(zbgF, 'aud');
-zbg{2} = subset(zbgF, 'step');
-zbg{3} = subset(zbgF, 'sine');
-zbg{4} = subset(zbgF, 'hot');
-zbg{5} = subset(zbgF, 'neutral');
-zbg{6} = subset(zbgF, 'cold');
+labels = {'auditory', 'step', 'sine', 'hot', 'neutral', 'cold'};
+zbg = cell(length(labels), 1);
+for i = 1:length(labels)
+    zbg{i} = subset(zbgF, labels{i});
+end
 
 
 %% Taking percentage of gridpoints with highest F-statistic, and computing regions:
@@ -52,13 +50,15 @@ grid on
 
 % 1) Inside each subset, saving p-value (supposed to be higher than 0.05):
 KSreg = cell(length(zbg), 1);
+limits = ones(length(zbg)+1, 1);
 for i = 1:length(zbg)
     regions = regtot{i};
-    KSregtemp = zeros(size(regions, 1), size(regions, 1));
+    limits(i+1) = limits(i) + size(regions, 1);
+    KSregtemp = [];
     for k1 = 1:size(regions, 1)
         for k2 = (k1+1):size(regions, 1)
             [~, p] = kstest2(regions(k1, :), regions(k2, :));
-            KSregtemp(k1, k2) = p;
+            KSregtemp = cat(1, KSregtemp, p);
         end
     end
     KSreg{i} = KSregtemp;
@@ -74,9 +74,26 @@ for k1 = 1:size(allregions, 1)
 end
 % Plotting these pvalues:
 figure
+hold on
 image(KSall, 'CDataMapping', 'scaled')
 colorbar
+for i = 1:length(limits)
+    plot([limits(1), limits(end)] - 0.5, [limits(i), limits(i)] - 0.5, 'w');
+    plot([limits(i), limits(i)] - 0.5, [limits(1), limits(end)] - 0.5, 'w');
+end
 title('p-values for Kolmogorov-Smirnov test on brain regions distributions for all datasets', 'Interpreter', 'latex')
+axis([limits(1)-0.5, limits(end)-0.5, limits(1)-0.5, limits(end)-0.5])
+% Analyzing important values:
+KSdata = [];
+for i = 1:length(KSreg)
+    KSdata = cat(1, KSdata, [KSreg{i}, i*ones(size(KSreg{i}))]);
+end
+figure
+boxplot(KSdata(:, 1), KSdata(:, 2), 'OutlierSize', 0.1, 'Symbol', '.k', 'Jitter', 0.5);
+title('Boxplot of Kolmogorov test p-value across all datasets', 'Interpreter', 'latex')
+xticklabels(labels)
+grid on
+
 
 
 
