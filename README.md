@@ -8,16 +8,16 @@ Program that allows to compare multi-sensory brain scans, through the use of a g
 ### Defining a ZBG object
 A ZBG object has three intrinsic values: 
 
-* a *method* [character|string], defining name of object,
+* a *method* [character|string]: defining name of object,
 
-* a *size* [array of integers, length 1 or 3], which is a vector of the number of voxels in the grid along all 3 dimensions. If one wants to define grid based on voxel size, one can use grid dimensions to compute final grid size. Grid dimensions are ([0, 0.496], [0, 1.122], [0, 0.276]), reference brain from the [Z Brain Atlas](https://engertlab.fas.harvard.edu/Z-Brain/home/),
+* a *size* [array of integers, length 1 or 3]: vector of the number of voxels in the grid, along all 3 dimensions. If one wants to define grid based on voxel size, one can use grid dimensions to compute final grid size. Grid dimensions are ([0, 0.496], [0, 1.122], [0, 0.276]), reference brain from the [Z Brain Atlas](https://engertlab.fas.harvard.edu/Z-Brain/home/),
 
-* an *orientation* [character], indicating where axes (x, y, z) point to. Orientation should be a character (e.g. 'RAS' or 'LPI'), with R:right, L:left, A:anterior, P:posterior, S:superior, I:inferior.
+* an *orientation* [character]: indicating where axes (x, y, z) point to. Orientation should be a character (e.g. 'RAS' or 'LPI'), with R:right, L:left, A:anterior, P:posterior, S:superior, I:inferior.
 
 ### Adding a dataset to a ZBG object
 The function addDataset allows to add a dataset to an already existing object. It takes two mandatory arguments and one optional argument. First argument is the ZBG object, second argument is the dataset structure (explained below), and third argument is to disable information printing while new data set is added (just type 'information_off' in this case). 
 
-Dataset structure is a structure containing mandatory information on new dataset to add. As grid size is set when ZBG object is created, new data will already adjust this size. Following are the fields required:
+Dataset structure is a structure containing mandatory information on new dataset to add. As grid size is set when ZBG object is created, new data will already adjust this size. The fields required are:
 
 * *name* [character|string]: defining name of new dataset,
 
@@ -36,6 +36,8 @@ When adding a new dataset to ZBG object, addDataset computes for each neuron the
 ### ZBG methods 
 
 We will not make an extensive list for all ZBG methods here, but rather describe the most important and useful ones. User can visualize all methods in the ZBG class Matlab file. We already went through addDataset, which allows to add new datasets to an already existing object. Basic operations are provided, such as addition (merge two ZBG objects), length (returns number of datasets in ZBG object) and indexing (get new ZBG object with datasets corresponding to indexes). Following are some of the other methods:
+
+* *subset*: takes an additional input argument (key words, as a character). Returns a new ZBG object containing datasets whose comments include the key words. This method is later used to discriminate datasets in the graphical interface,
 
 * *clean*: detects if a dataset occurs more than once, and delete potential doublons,
 
