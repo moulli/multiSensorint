@@ -75,4 +75,18 @@ We will not make an extensive list for all ZBG methods here, but rather describe
 
 ### Interfish reliability
 
+This atlas does not have the pretention to compare zebra fish brains neuron by neuron. Depending on the fish, brain organisation can differ, even if brain functions are fairly the same. In order to certify that this way of comparing brains is relevant, we made this particular study.
+
+For each stimulus (we had auditory, vestibular step, vestibular sine, hot and cold), we took the 1% of most active neurons, based on the F-statistic. Using the [Z Brain Atlas](https://engertlab.fas.harvard.edu/Z-Brain/home/), we deduced for each region (294 in total) the number of most active neurons part of it. By dividing this 294-long array by the total number of 1% most active neurons, we obtained a distribution, comparable across fish and stimuli.
+
+We used the Kolmogorov-Smirnov test to compare these distributions, telling if two regions vectors follow the same law. Kolmogorov-Smirnov test checks maximum distance between the two cumulative distributions against a table. 
+
+![Example of cumulative distributions for acoustic and thermotaxis stimuli](/README_img/cumul.png)
+
+We used this test to compare all the experiments one to another for a given stimulus. In order to do that, we used the p-value for the Kolmogorov-Smirnov test between two regions vectors. The p-value gave the following information: it was the probability to find samples this extreme taken from the same distribution (the null hypothesis). The highest the p-value, the more possible null hypothesis was accepted. In the end, it was possible to make a boxplot of the distribution of p-values per stimulus, as plotted below.
+
+![Distributions of p-values across stimuli](/README_img/boxplot.png) 
+
+How to interpret these plots? Some stimuli have a great repeatability in terms of most active regions, some have a good one with a wide range, and some have a poor one with a wide range. When we take a closer look at the p-values inside a stimulus, we notice that there can be experiments with a low p-value, no matter what other experiment we compare it to. We could then delete these 'bad' experiments from the initial dataset, in order to only keep experiments with a robust regions repartition for most active neurons.
+
 ### What correlation to use
