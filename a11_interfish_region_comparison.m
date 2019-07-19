@@ -99,11 +99,35 @@ grid on
 
 %% Deleting bad example:
 
-KSreg = cell(length(zbg), 1);
+% Logical vectors of what to keep:
+tokeep = [];
+regkeep = cell(length(zbg), 1);
 limits = ones(length(zbg)+1, 1);
 for i = 1:length(zbg)
     regions = regtot{i};
-    limits(i+1) = limits(i) + size(regions, 1);
+    tokeeptemp = zeros(size(regions, 1));
+    for k1 = 1:size(regions, 1)
+        for k2 = 1:size(regions, 1)
+            if k1 == k2
+                p = 0;
+            else
+                [~, p] = kstest2(regions(k1, :), regions(k2, :));
+            end
+            tokeeptemp(k1, k2) = p;
+        end
+    end
+    tokeeptemp = sum(tokeeptemp, 2) / (size(tokeeptemp, 2)-1);
+    tokeep = cat(1, tokeep, tokeeptemp);
+    regkeep{i} = tokeeptemp > 0.5;
+    limits(i+1) = 1 + sum(tokeep > 0.5);
+end
+tokeep = tokeep > 0.5;
+
+% Changing KSreg:
+KSreg
+KSreg = cell(length(zbg), 1);
+for i = 1:length(zbg)
+    regions = regtot{i}(regkeep{i}, :);
     KSregtemp = [];
     for k1 = 1:size(regions, 1)
         for k2 = (k1+1):size(regions, 1)
@@ -113,8 +137,32 @@ for i = 1:length(zbg)
     end
     KSreg{i} = KSregtemp;
 end
+KSreg
 
-
+% New dataset:
+KSall = KSall(tokeep, :);
+KSall = KSall(:, tokeep);
+% Plotting these pvalues:
+figure
+hold on
+image(KSall, 'CDataMapping', 'scaled')
+colorbar
+for i = 1:length(limits)
+    plot([limits(1), limits(end)] - 0.5, [limits(i), limits(i)] - 0.5, 'w');
+    plot([limits(i), limits(i)] - 0.5, [limits(1), limits(end)] - 0.5, 'w');
+end
+title('p-values for Kolmogorov-Smirnov test on brain regions distributions for all datasets', 'Interpreter', 'latex')
+axis([limits(1)-0.5, limits(end)-0.5, limits(1)-0.5, limits(end)-0.5])
+% Analyzing important values:
+KSdata = [];
+for i = 1:length(KSreg)
+    KSdata = cat(1, KSdata, [KSreg{i}, i*ones(size(KSreg{i}))]);
+end
+figure
+boxplot(KSdata(:, 1), KSdata(:, 2), 'OutlierSize', 0.1, 'Symbol', '.k', 'Jitter', 0.5);
+title('Boxplot of Kolmogorov test p-value for different stimuli', 'Interpreter', 'latex')
+xticklabels(labels)
+grid on
 
 
 
