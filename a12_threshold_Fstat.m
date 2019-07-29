@@ -318,7 +318,7 @@ end
 % signals for later.
 
 % Parameters:
-numsamples = 1000;
+numsamples = size(dff, 1);
 mean_dff = mean(dff, 1);
 std_set = mean(std(dff, [], 2));
 std_div = 4;
@@ -378,4 +378,232 @@ fprintf('Minimum F-statistic at 5 std for averaged sample method is %.2f \n', Fl
 
 % Optional: number of neurons kept with this technique:
 fprintf('Number of neurons kept is %.0f \n', sum(stats(:, 2) > Flim));
+
+
+%% Analyzing existing datasets
+
+% Path to data
+dirpath = '/home/ljp/Science/Hippolyte/ALL_DATASETS';
+dirdata = dir(dirpath);
+
+% Results
+Flims = [];
+numsignals = [];
+numneurons = [];
+propneurons = [];
+
+% Main loop
+for i = 1:length(dirdata)
+    
+    % Informations on file:
+    ntemp = dirdata(i).name; % name of the file
+    ptemp = fullfile(dirpath, ntemp); % name of path to file
+    
+    % If non spontaneous activity then proceding
+    if startsWith(ntemp, '20') && isempty(regexp(ntemp, 'spontaneous', 'once')) 
+        try
+            disp(ntemp)
+            [Flim, numsignal, numneuron, propneuron] = a13_Fthreshold(ptemp);
+            disp([numneuron, propneuron*100])
+            Flims = cat(1, Flims, Flim);
+            numsignals = cat(1, numsignals, numsignal);
+            numneurons = cat(1, numneurons, numneuron);
+            propneurons = cat(1, propneurons, propneuron);
+        catch
+            fprintf('Problem with HDF5, moving to next one \n');
+        end
+    end
+end
+
+% Display information
+figure
+subplot(2, 2, 1)
+hist(Flims)
+title('Histogram of F-statistic threshold', 'Interpreter', 'latex')
+subplot(2, 2, 2)
+hist(numsignals)
+title('Histogram of number of signals', 'Interpreter', 'latex')
+subplot(2, 2, 3)
+hist(numneurons)
+title('Histogram of number of neurons', 'Interpreter', 'latex')
+subplot(2, 2, 4)
+hist(propneurons)
+title('Histogram of proportion of neurons', 'Interpreter', 'latex')
+
+figure
+subplot(3, 1, 1)
+hist(Flims, 25)
+title('Histogram of F-statistic threshold', 'Interpreter', 'latex')
+subplot(3, 1, 2)
+hist(numneurons, 25)
+title('Histogram of number of neurons', 'Interpreter', 'latex')
+subplot(3, 1, 3)
+hist(propneurons, 25)
+title('Histogram of proportion of neurons', 'Interpreter', 'latex')
+        
+
+
+%% Trying with residuals and shuffled
+
+% Recover data
+h5path = '/home/ljp/Science/Hippolyte/ALL_DATASETS/2018-05-24Run08.h5';
+dff = h5read(h5path, '/Data/Brain/Analysis/DFF');
+stim = h5read(h5path, '/Data/Stimulus/vestibular1/motorAngle')';
+regressors = [ones(length(stim), 1), abs(expconv(stim.*(stim>0))), abs(expconv(stim.*(stim<0))), ...
+              abs(expconv(gradient(stim).*(gradient(stim)>0))), abs(expconv(gradient(stim).*(gradient(stim)<0)))];
+for i = 2:size(regressors, 2)
+    regressors(:, i) = (regressors(:, i)-mean(regressors(:, i))) ./ std(regressors(:, i));
+end
+regressors(isnan(regressors)) = 0;
+
+% Compute F-stat
+F_statistic = zeros(size(dff, 1), 1);
+residuals = zeros(size(dff));
+warning('off')
+for i = 1:size(dff, 1)
+    [~, ~, residual, ~, stats] = regress(dff(i, :)', regressors);
+    F_statistic(i) = stats(2);
+    residuals(i, :) = residual';
+end
+
+% Compute residuals F-stat
+F_residuals = zeros(size(dff, 1), 1);
+for i = 1:size(dff, 1)
+    [~, ~, ~, ~, stats] = regress(residuals(i, :)', regressors);
+    F_residuals(i) = stats(2);
+end
+
+% Compute F-stat for each shuffled signal
+sigshuffle = zeros(size(dff));
+for i = 1:size(dff, 1)
+    sigshuffle(i, :) = dff(i, randperm(size(dff, 2)));
+end
+F_sigshuffle = zeros(size(dff, 1), 1);
+for i = 1:size(dff, 1)
+    [~, ~, ~, ~, stats] = regress(sigshuffle(i, :)', regressors);
+    F_sigshuffle(i) = stats(2);
+end
+
+% Compute F-stat for signals with shuffled timepoints
+timeshuffle = zeros(size(dff));
+for i = 1:size(dff, 2)
+    timeshuffle(:, i) = dff(randperm(size(dff, 1)), i);
+end
+F_timeshuffle = zeros(size(dff, 1), 1);
+for i = 1:size(dff, 1)
+    [~, ~, ~, ~, stats] = regress(timeshuffle(i, :)', regressors);
+    F_timeshuffle(i) = stats(2);
+end
+
+% Plot all distributions
+figure
+hold on
+[bdff, adff] = hist(F_statistic, 100);
+plot(adff, bdff)
+% [bres, ares] = hist(F_residuals, 100);
+% plot(ares, bres)
+% [bsig, asig] = hist(F_sigshuffle, 100);
+% plot(asig, bsig)
+[btime, atime] = hist(F_timeshuffle, 100);
+plot(atime, btime)
+legend('DFF', 'Time shuffle') %, 'Residuals', 'Signals shuffle', 'Times shuffle')
+grid on
+title('Histogram of F-statistics for Geoffrey 24-05-2018, and shuffled signals F-statistics', 'Interpreter', 'latex')
+xlabel('F-statistic', 'Interpreter', 'latex')
+ylabel('Number of neurons', 'Interpreter', 'latex')
+
+% Shuffling in time with only bestn% of best neurons
+bestn = 1;
+[~, indF] = sort(F_statistic, 'descend');
+indkeep = [];
+for i = 1:(bestn-1)
+    indkeep = cat(1, indkeep, indF(1:floor(size(dff, 1)*bestn/100)));
+end
+indkeep = cat(1, indkeep, indF(1:(size(dff, 1)-length(indkeep))));
+dfftemp = dff(indkeep, :);
+timeshufbest = zeros(size(dff));
+for i = 1:size(dff, 2)
+    timeshufbest(:, i) = dfftemp(randperm(size(dfftemp, 1)), i);
+end
+F_timeshufbest = zeros(size(dff, 1), 1);
+for i = 1:size(dff, 1)
+    [~, ~, ~, ~, stats] = regress(timeshufbest(i, :)', regressors);
+    F_timeshufbest(i) = stats(2);
+end
+figure
+hold on
+[bdff, adff] = hist(F_statistic, 100);
+plot(adff, bdff)
+[btime, atime] = hist(F_timeshuffle, 100);
+plot(atime, btime)
+[btsb, atsb] = hist(F_timeshufbest, 100);
+plot(atsb, btsb)
+
+
+%% Comparing F-statistics distributions
+
+% Path to data
+dirpath = '/home/ljp/Science/Hippolyte/ALL_DATASETS';
+dirdata = dir(dirpath);
+
+% Results
+Fstats = cell(0, 2);
+
+% Main loop
+for i = 1:length(dirdata)
+    
+    % Informations on file:
+    ntemp = dirdata(i).name; % name of the file
+    ptemp = fullfile(dirpath, ntemp); % name of path to file
+    
+    % If non spontaneous activity then proceding
+    if startsWith(ntemp, '20') && isempty(regexp(ntemp, 'spontaneous', 'once')) 
+        try  
+            % Recover neurons signals
+            try 
+                dff = h5read(ptemp, '/Data/Brain/Analysis/DFFaligned');
+            catch
+                dff = h5read(ptemp, '/Data/Brain/Analysis/DFF');
+            end
+            % Recover stimulus
+            h5infostim = h5info(ptemp);
+            for j = 1:size(h5infostim.Groups.Groups, 1)
+                if h5infostim.Groups.Groups(j).Name == "/Data/Stimulus"
+                    break
+                end
+            end
+            for j1 = 1:size(h5infostim.Groups.Groups(j).Groups, 1)
+                numpath = size(h5infostim.Groups.Groups(j).Groups(j1).Datasets, 1);
+                for j2 = 1:numpath
+                    eptemp = fullfile(h5infostim.Groups.Groups(j).Groups(j1).Name, h5infostim.Groups.Groups(j).Groups(j1).Datasets(j2).Name);
+                    stimtemp = h5read(ptemp, eptemp);
+                    if length(stimtemp) == size(dff, 2)
+                        stim = stimtemp;
+                    end
+                end
+            end
+            stim = reshape(stim, length(stim), 1);
+            % Compute regressors
+            regressors = [ones(length(stim), 1), abs(expconv(stim.*(stim>0))), abs(expconv(stim.*(stim<0))), ...
+                          abs(expconv(gradient(stim).*(gradient(stim)>0))), abs(expconv(gradient(stim).*(gradient(stim)<0)))];
+            for j = 2:size(regressors, 2)
+                regressors(:, j) = (regressors(:, j)-mean(regressors(:, j))) ./ std(regressors(:, j));
+            end
+            regressors(isnan(regressors)) = 0;
+            % F-statistic
+            F_statistic = zeros(size(dff, 1), 1);
+            warning('off')
+            for j = 1:size(dff, 1)
+                [~, ~, ~, ~, stats] = regress(dff(j, :)', regressors);
+                F_statistic(j) = stats(2);
+            end
+            warning('on')
+            % Save information
+            disp(ntemp)
+            Fstats = [Fstats; {ntemp, F_statistic}]; 
+        catch
+            fprintf('Problem with HDF5, moving to next one \n');
+        end
+    end
+end
 
