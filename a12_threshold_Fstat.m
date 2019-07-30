@@ -607,3 +607,69 @@ for i = 1:length(dirdata)
     end
 end
 
+
+
+%% Defining threshold for all stimuli
+
+ntemp = '2015-02-24Run05_a';
+ptemp = '/home/ljp/Science/Hippolyte/ALL_DATASETS/2015-02-24Run05_a.h5';
+
+% Recover neurons signals
+try 
+    dff = h5read(ptemp, '/Data/Brain/Analysis/DFFaligned');
+catch
+    dff = h5read(ptemp, '/Data/Brain/Analysis/DFF');
+end
+% Recover stimulus
+h5infostim = h5info(ptemp);
+for j = 1:size(h5infostim.Groups.Groups, 1)
+    if h5infostim.Groups.Groups(j).Name == "/Data/Stimulus"
+        break
+    end
+end
+for j1 = 1:size(h5infostim.Groups.Groups(j).Groups, 1)
+    numpath = size(h5infostim.Groups.Groups(j).Groups(j1).Datasets, 1);
+    for j2 = 1:numpath
+        eptemp = fullfile(h5infostim.Groups.Groups(j).Groups(j1).Name, h5infostim.Groups.Groups(j).Groups(j1).Datasets(j2).Name);
+        stimtemp = h5read(ptemp, eptemp);
+        if length(stimtemp) == size(dff, 2)
+            stim = stimtemp;
+        end
+    end
+end
+stim = reshape(stim, length(stim), 1);
+% Compute regressors
+regressors = [ones(length(stim), 1), abs(expconv(stim.*(stim>0))), abs(expconv(stim.*(stim<0))), ...
+              abs(expconv(gradient(stim).*(gradient(stim)>0))), abs(expconv(gradient(stim).*(gradient(stim)<0)))];
+for j = 2:size(regressors, 2)
+    regressors(:, j) = (regressors(:, j)-mean(regressors(:, j))) ./ std(regressors(:, j));
+end
+regressors(isnan(regressors)) = 0;
+% F-statistic
+F_statistic = zeros(size(dff, 1), 1);
+warning('off')
+for j = 1:size(dff, 1)
+    [~, ~, ~, ~, stats] = regress(dff(j, :)', regressors);
+    F_statistic(j) = stats(2);
+end
+warning('on')
+
+
+% Plot signal associated to F-statistic of 50
+temp = F_statistic;
+temp(temp < 50) = 2 * max(temp);
+[~, ind] = min(temp);
+dfftemp = dff(ind, :) / max(dff(ind, :)) * max(stim);
+figure; hold on; plot(stim); plot(dfftemp)
+
+% Build percentage based 
+[~, temp] = sort(F_statistic);
+percentage = zeros(size(F_statistic));
+temp2 = linspace(0, 1, length(F_statistic));
+for i = 1:length(F_statistic)
+    percentage(temp(i)) = temp2(i);
+end
+
+
+
+
