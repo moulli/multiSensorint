@@ -1,5 +1,6 @@
 clear; close all; clc
 addpath(genpath('/home/ljp/Science/Hippolyte'))
+addpath(genpath('/home/ljp/Programs'))
 
 
 %% Computing all dffaligned IF NECESSARY:
@@ -607,6 +608,17 @@ for i = 1:length(dirdata)
     end
 end
 
+figure
+hold on
+for i = 1:size(Fstats, 1)
+    [btemp, atemp] = hist(Fstats{i, 2}, 200);
+    plot(atemp, btemp)
+end
+grid on
+title('Histogram of F-statistic distributions for all datasets available', 'Interpreter', 'latex')
+xlabel('F-statistic', 'Interpreter', 'latex')
+ylabel('Number of neurons', 'Interpreter', 'latex')
+
 
 
 %% Defining threshold for all stimuli
@@ -669,6 +681,66 @@ temp2 = linspace(0, 1, length(F_statistic));
 for i = 1:length(F_statistic)
     percentage(temp(i)) = temp2(i);
 end
+
+
+
+%% Using BSD to deconvolve and check influence
+
+% Build regressors
+path = '/home/ljp/Science/Hippolyte/ALL_DATASETS/2018-05-24Run08.h5';
+dff = h5read(path, '/Data/Brain/Analysis/DFFaligned');
+stim = h5read(path, '/Data/Stimulus/vestibular1/motorAngle');
+stim = reshape(stim, 1, length(stim));
+regressors = [ones(length(stim), 1), abs(expconv(stim'.*(stim'>0))), abs(expconv(stim'.*(stim'<0))), ...
+              abs(expconv(gradient(stim').*(gradient(stim')>0))), abs(expconv(gradient(stim').*(gradient(stim')<0)))];
+for i = 2:size(regressors, 2)
+    regressors(:, i) = (regressors(:, i)-mean(regressors(:, i))) ./ std(regressors(:, i));
+end
+
+% Estimate time constants for BSD
+% [tau_rises, tau_decays] = estimateTimeConstantsHDF5(path);
+tau_rises = 1.91;
+tau_decays = 2.93;
+
+% Parameters for BSD
+Palg = struct;
+Palg.tauRise = tau_rises;
+Palg.tauDecay = tau_decays;
+Oalg = struct;
+Oalg.adaptive = 1; 
+Oalg.iterations = 5; 
+dff = dff';  
+dff = cast(dff, 'double'); 
+time = h5read(path, '/Data/Brain/Times'); 
+time = cast(time, 'double'); 
+dff(abs(dff) > 10*std(dff(:))) = 1e-3; 
+dff(isnan(dff)) = 1e-3; 
+dff(dff == 0) = 1e-3; 
+Oalg.Time = size(dff, 1);
+Oalg.dt = mean(gradient(time));
+Oalg.nNeurons = size(dff, 2);
+[~, C] = pBSD(dff, Oalg, Palg);
+
+warning('off')
+fprintf('Launching multilinear regression for all neurons. \n');
+coeffs = zeros(size(dff, 2), size(regressors, 2));
+Fstat = zeros(size(dff, 2), 1);
+coeffsBSD = zeros(size(dff, 2), size(regressors, 2));
+FstatBSD = zeros(size(dff, 2), 1);
+for i = 1:size(dff, 2)
+    % Actual regression
+    [coeff, ~, ~, ~, stat] = regress(dff(:, i), regressors);
+    coeffs(i, :) = coeff';
+    Fstat(i) = stat(2);
+    % Regression on convolved spikes 
+    [coeff, ~, ~, ~, stat] = regress(C(:, i), regressors);
+    coeffsBSD(i, :) = coeff';
+    FstatBSD(i) = stat(2);
+    % Progress
+    showProgress(i, size(dff, 1));
+end
+fprintf('\n');
+warning('on')
 
 
 
