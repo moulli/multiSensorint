@@ -3,9 +3,10 @@ function onew = plus(o1, o2)
 % Orientation is determined by orientation of first object/
 
     % Check methods and increments are the same:
-    if ~isequal(string([o1.method]), string([o2.method]))
-        error('The two objects should have the same methods.')
-    elseif ~isequal([o1.increment], [o2.increment])
+%     if ~isequal(string([o1.method]), string([o2.method]))
+%         error('The two objects should have the same methods.')
+%     else
+    if ~isequal([o1.increment], [o2.increment])
         error('The two objects should have the same increments.')
     end
     % Indication if orientation is different:

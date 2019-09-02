@@ -47,6 +47,10 @@ function addDataset(obj, dataset_in, indic_in)
     if ~isfield(dataset_in, 'orientation'); error('Please provide orientation.'); end
     if ~isfield(dataset_in, 'coordinates'); error('Please provide coordinates for each neuron.'); end
     if ~isfield(dataset_in, 'correlation'); error('Please provide correlation for each neuron.'); end
+    % Checking if coordinates or correlation is empty:
+    if isempty(dataset_in.coordinates) || isempty(dataset_in.correlation)
+        error('Coordinates or correlation is an empty array.');
+    end
     % Checking dimensions:
     coord_in = dataset_in.coordinates;
     cor_in = dataset_in.correlation;
