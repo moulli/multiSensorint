@@ -137,6 +137,7 @@ for i = 2:4
     scatter3(coordi(:, 1), coordi(:, 2), coordi(:, 3), mkrsize, colcom, 'filled')
 end
 legend('2 stimuli', '3 stimuli', '4 stimuli')
+<<<<<<< HEAD
 
 
 
@@ -402,3 +403,5 @@ view(-90, 90)
 
 
 
+=======
+>>>>>>> a3d4935c227a443b69f21529160678803a297ee7
