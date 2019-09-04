@@ -137,14 +137,15 @@ for i = 2:4
     scatter3(coordi(:, 1), coordi(:, 2), coordi(:, 3), mkrsize, colcom, 'filled')
 end
 legend('2 stimuli', '3 stimuli', '4 stimuli')
-<<<<<<< HEAD
 
 
 
 %% Adding Volker's modifications
 
 %% Brain contour
-load('C:/Users/Hippolyte Moulle/Documents/GitHub/multiSensorint/zoutlines005_new.mat')
+
+% load('C:/Users/Hippolyte Moulle/Documents/GitHub/multiSensorint/zoutlines005_new.mat')
+load('C:/Users/Hippolyte Moulle/Documents/LJP_datasets/Multisensory dataset/zoutlines005_new.mat');
 zgridtot = flatten(zoutlines005);
 % braingrid = zeros(zgridtot.gridsize(1:3));
 % braingrid(zgridtot.Zindex) = 1;
@@ -345,14 +346,11 @@ for i = length(nneukeep):-1:1
     scatter(coordi(:, 1), coordi(:, 2), sizes(i), colours(i, :), 'filled')
 end
 zcontour(zgridtot)
-for i = 1:length(regions_to_plot)
-    zcontour(flatten(subset(zoutlines005, regions_to_plot{i})), [], regions_colours(i, :))
-end
-legend([flip(nstims); 'Whole brain outline'; regions_to_plot])
+legend([flip(nstims); 'Whole brain outline'])
 view(-90, 90)
 
 figure
-title('Neurons with highest F-statistic and highest coefficients for different stimuli, z = 0.183mm', ...
+title('Neurons with highest F-statistic and highest coefficients for different stimuli, z = 0.168mm', ...
        'Interpreter', 'latex')
 xlabel('x-axis', 'Interpreter', 'latex')
 ylabel('y-axis', 'Interpreter', 'latex')
@@ -365,22 +363,12 @@ for i = length(nneukeep):-1:1
     coordi = coordi(zlayer <= coordi(:, 3) & coordi(:, 3) < zlayer+0.005, :);
     scatter(coordi(:, 1), coordi(:, 2), sizes(i), colours(i, :), 'filled')
 end
-% zgridtotlayer = duplicate(zgridtot);
-% coordlayer = get3Dcoord(zgridtotlayer);
-% keeplayer = (coordlayer(:, 3) < zlayer | zlayer+0.005 <= coordlayer(:, 3));
-% zgridtotlayer.Zindex(keeplayer) = [];
-% zgridtotlayer.Znumber(keeplayer) = [];
-% zgridtotlayer.Zneuron(keeplayer) = [];
-% zgridtotlayer.Zcorrel(keeplayer) = [];
-zcontour(zgridtotlayer)
-for i = 1:length(regions_to_plot)
-    zcontour(flatten(subset(zoutlines005, regions_to_plot{i})), [], regions_colours(i, :))
-end
-legend([flip(nstims); 'Whole brain outline'; regions_to_plot])
+zcontour(zgridtot)
+legend([flip(nstims); 'Whole brain outline'])
 view(-90, 90)
 
 figure
-title('Neurons with highest F-statistic and highest coefficients for different stimuli, z = 0.183mm', ...
+title('Neurons with highest F-statistic and highest coefficients for different stimuli, z = 0.148mm', ...
        'Interpreter', 'latex')
 xlabel('x-axis', 'Interpreter', 'latex')
 ylabel('y-axis', 'Interpreter', 'latex')
@@ -394,14 +382,10 @@ for i = length(nneukeep):-1:1
     scatter(coordi(:, 1), coordi(:, 2), sizes(i), colours(i, :), 'filled')
 end
 zcontour(zgridtot)
-for i = 1:length(regions_to_plot)
-    zcontour(flatten(subset(zoutlines005, regions_to_plot{i})), [], regions_colours(i, :))
-end
-legend([flip(nstims); 'Whole brain outline'; regions_to_plot])
+legend([flip(nstims); 'Whole brain outline'])
 view(-90, 90)
 
 
 
 
-=======
->>>>>>> a3d4935c227a443b69f21529160678803a297ee7
+
