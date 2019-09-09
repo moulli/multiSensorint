@@ -378,7 +378,7 @@ legend([flip(nstims); 'Whole brain outline'])
 view(-90, 90)
 
 figure
-title('Neurons with highest F-statistic and highest coefficients for different stimuli, z = 0.148mm', ...
+title('Neurons with highest F-statistic and highest coefficients for different stimuli, z = 0.158mm', ...
        'Interpreter', 'latex')
 xlabel('x-axis', 'Interpreter', 'latex')
 ylabel('y-axis', 'Interpreter', 'latex')
@@ -387,7 +387,7 @@ axis equal
 hold on
 for i = length(nneukeep):-1:1
     coordi = ind2coord(zgrid005reg, nneukeep{i});
-    zlayer = 0.148;
+    zlayer = 0.158;
     coordi = coordi(zlayer <= coordi(:, 3) & coordi(:, 3) < zlayer+0.005, :);
     scatter(coordi(:, 1), coordi(:, 2), sizes(i), colours(i, :), 'filled')
 end
