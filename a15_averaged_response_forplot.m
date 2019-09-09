@@ -18,9 +18,9 @@ stimpaths = {'/Data/Stimulus/auditory1/acousticPulse'; '/Data/Stimulus/vestibula
          
 %% Entering point coordinates
 
-selpoint = [0.21794, 0.57853, 0.183];
-selpoint = [0.3482, 0.57853, 0.168];
-selpoint = [0.27806, 0.71878, 0.148];
+selpoint = [0.2781, 0.7188, 0.148];
+selpoint = [0.2179, 0.7238, 0.158];
+selpoint = [0.1628, 0.5435, 0.193];
 
 
 %% Compute averaged answer for each stimulus
@@ -72,6 +72,7 @@ for s = 1:length(stims)
         end
         fprintf('Iteration %.0f out of %.0f \n', [i, length(obj)]);
     end
+    mdff = mdff - mean(mdff);
     meanmdff = mean(mdff, 2);
 %     mdff = mdff - mean(meanmdff); mdff = mdff ./ std(meanmdff);
 %     meanmdff = meanmdff - mean(meanmdff); meanmdff = meanmdff ./ std(meanmdff);

@@ -1,11 +1,22 @@
 clear; close all; clc
-addpath(genpath('C:/Users/Hippolyte Moulle/Documents/GitHub/multiSensorint'))
 
+%% Load data depending on used computer
 
-
-%% Load ZBG object
-
-load('C:/Users/Hippolyte Moulle/Documents/LJP_datasets/Multisensory dataset/zgrid005reg.mat');
+if exist('C:/Users/Hippolyte Moulle', 'dir')
+    % ADDPATH TO FOLDER
+    addpath(genpath('C:/Users/Hippolyte Moulle/Documents/GitHub/multiSensorint'))
+    % Load basic dataset
+    load('C:/Users/Hippolyte Moulle/Documents/LJP_datasets/Multisensory dataset/zgrid005reg.mat');
+    % Load zoutlines
+    load('C:/Users/Hippolyte Moulle/Documents/LJP_datasets/Multisensory dataset/zoutlines005_new.mat');
+    %Load visual dataset
+    load('C:/Users/Hippolyte Moulle/Documents/LJP_datasets/Multisensory dataset/z5msg.mat');
+elseif exist('/home/ljp/Science/Hippolyte', 'dir')
+    addpath(genpath('/home/ljp/Science/Hippolyte/multiSensorint'))
+    load('/home/ljp/Science/Hippolyte/zgrid005reg.mat');
+    load('/home/ljp/Science/Hippolyte/multiSensorint/visualisation_app/app02_regressors/zoutlines005.mat'); % careful, uncomplete zoutlines
+    load('/home/ljp/Science/Hippolyte/z5msg.mat');
+end
 
 
 %% Algorithm to keep neurons per stimulus
@@ -145,7 +156,6 @@ legend('2 stimuli', '3 stimuli', '4 stimuli')
 %% Brain contour
 
 % load('C:/Users/Hippolyte Moulle/Documents/GitHub/multiSensorint/zoutlines005_new.mat')
-load('C:/Users/Hippolyte Moulle/Documents/LJP_datasets/Multisensory dataset/zoutlines005_new.mat');
 zgridtot = flatten(zoutlines005);
 % braingrid = zeros(zgridtot.gridsize(1:3));
 % braingrid(zgridtot.Zindex) = 1;
@@ -214,8 +224,6 @@ zgridtot = flatten(zoutlines005);
 
 %% Part A
 
-%Load visual dataset
-load('C:/Users/Hippolyte Moulle/Documents/LJP_datasets/Multisensory dataset/z5msg.mat');
 % Take most active neurons based on algorithm above
 % Take right stimulus and isolate coeffs and F-stat
 ztemp = subset(z5msg, '3rd');
@@ -330,9 +338,11 @@ view(-90, 90)
 
 %% Part C
 
+sizes = [2, 6, 10, 15, 23];
+
 % Just specific layers 
 figure
-title('Neurons with highest F-statistic and highest coefficients for different stimuli, z = 0.183mm', ...
+title('Neurons with highest F-statistic and highest coefficients for different stimuli, z = 0.193mm', ...
        'Interpreter', 'latex')
 xlabel('x-axis', 'Interpreter', 'latex')
 ylabel('y-axis', 'Interpreter', 'latex')
@@ -341,7 +351,7 @@ axis equal
 hold on
 for i = length(nneukeep):-1:1
     coordi = ind2coord(zgrid005reg, nneukeep{i});
-    zlayer = 0.183;
+    zlayer = 0.193;
     coordi = coordi(zlayer <= coordi(:, 3) & coordi(:, 3) < zlayer+0.005, :);
     scatter(coordi(:, 1), coordi(:, 2), sizes(i), colours(i, :), 'filled')
 end
@@ -350,7 +360,7 @@ legend([flip(nstims); 'Whole brain outline'])
 view(-90, 90)
 
 figure
-title('Neurons with highest F-statistic and highest coefficients for different stimuli, z = 0.168mm', ...
+title('Neurons with highest F-statistic and highest coefficients for different stimuli, z = 0.158mm', ...
        'Interpreter', 'latex')
 xlabel('x-axis', 'Interpreter', 'latex')
 ylabel('y-axis', 'Interpreter', 'latex')
@@ -359,7 +369,7 @@ axis equal
 hold on
 for i = length(nneukeep):-1:1
     coordi = ind2coord(zgrid005reg, nneukeep{i});
-    zlayer = 0.168;
+    zlayer = 0.158;
     coordi = coordi(zlayer <= coordi(:, 3) & coordi(:, 3) < zlayer+0.005, :);
     scatter(coordi(:, 1), coordi(:, 2), sizes(i), colours(i, :), 'filled')
 end
