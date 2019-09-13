@@ -8,6 +8,10 @@ addpath(genpath('/home/ljp/Science/Hippolyte'))
 load('/home/ljp/Science/Hippolyte/zgrid005reg.mat')
 load('/home/ljp/Science/Hippolyte/z5msg.mat')
 zfinal = subset(zgrid005reg + subset(z5msg, '3rd'), 'F-statistic');
+% % Get rid of certain datasets
+% ridof = [6, 63];
+% tokeep = 1:length(zfinal);
+% zfinal = zfinal(tokeep(sum(ridof' == tokeep, 1) == 0)); 
 % Build cells with stimuli and paths
 stims = {'auditory'; 'sine'; 'hot'; 'cold'; '3rd'};
 stimnames = {'auditory'; 'vestibular'; 'hot'; 'cold'; 'visual'};
@@ -20,7 +24,7 @@ stimpaths = {'/Data/Stimulus/auditory1/acousticPulse'; '/Data/Stimulus/vestibula
 
 selpoint = [0.2781, 0.7188, 0.148;
             0.2179, 0.7238, 0.158;
-            0.1628, 0.5435, 0.193];
+            0.1828, 0.5435, 0.193];
 
 
 %% Compute averaged answer for each stimulus
@@ -37,33 +41,40 @@ for pt = 1:size(selpoint, 1)
         % Get important parameters
         obj = subset(zfinal, stims{s});
         ptemp = char(obj.paths(1));
-        stim = h5read(ptemp, stimpaths{s});
-        time = mean(gradient(h5read(ptemp, '/Data/Brain/Times')));
+        time = mean(gradient(h5read(ptemp, '/Data/Brain/Times'))); % WE SUPPOSE ALL TIMES ARE THE SAME WITHIN SAME STIMULUS
 
-        % Getting spikes, deducing period, and computing indexes to average upon:
-        delay = 10; % to give margin when plotted
+        % Define period
+        stim = h5read(ptemp, stimpaths{s});
+        delay = 15; % to give margin when plotted
         spikes = findSpikes(stim) - delay;
         period = min(spikes(2:end)-spikes(1:end-1));
-        indexes = []; 
-        p = 1;        
-        while spikes(p) <= length(stim) - period - delay + 1
-            indexes = cat(2, indexes, (spikes(p):(spikes(p)+period+delay))');
-            if p == length(spikes)
-                break
-            end
-            p = p + 1;
-        end   
-        indexes = indexes(:, all(indexes > 0));
-        mstim = mean(stim(indexes), 2);
-    %     mstim = mstim - mean(mstim); mstim = mstim ./ std(mstim);
-        lenstim = length(mstim);
-        meanvals{s, 1, pt} = mstim;
-
-        % Average dff for selected points:
+        % Average stim and dff for selected points:
+        mstim = zeros(period+delay+1, 0);
         mdff = zeros(period+delay+1, 0);
         for i = 1:length(obj)
-            coord = get3Dcoord(obj(i));
-            indf = (sum((coord - selpoint(pt, :)).^2, 2) <= 0.005^2);
+            
+            % Getting spikes, deducing period, and computing indexes to average upon:
+            ptemp = char(obj(i).paths(1));
+            stim = h5read(ptemp, stimpaths{s});
+            spikes = findSpikes(stim) - delay;
+            indexes = []; 
+            p = 1;        
+            while spikes(p) <= length(stim) - period - delay + 1
+                indexes = cat(2, indexes, (spikes(p):(spikes(p)+period+delay))');
+                if p == length(spikes)
+                    break
+                end
+                p = p + 1;
+            end   
+            indexes = indexes(:, all(indexes > 0));
+            mstimtemp = mean(stim(indexes), 2);
+        %     mstim = mstim - mean(mstim); mstim = mstim ./ std(mstim);
+%             lenstim = length(mstim);
+            mstim = cat(2, mstim, mstimtemp);
+            
+            objtemp = obj(i);
+            coord = get3Dcoord(objtemp);
+            indf = (sum((coord - selpoint(pt, :)).^2, 2) < 0.005^2);
             if isempty(indf)
                 continue
             end
@@ -84,10 +95,12 @@ for pt = 1:size(selpoint, 1)
         meanmdff = mean(mdff, 2);
     %     mdff = mdff - mean(meanmdff); mdff = mdff ./ std(meanmdff);
     %     meanmdff = meanmdff - mean(meanmdff); meanmdff = meanmdff ./ std(meanmdff);
+        mstim = mean(mstim, 2);
         if ~isempty(mdff)
             [~, maxstd] = max(std(mdff));
             mstim = std(mdff(:, maxstd)) * mstim ./ std(mstim);mstim = mstim - mean(mstim) + mean(meanmdff); 
         end
+        meanvals{s, 1, pt} = mstim;
 
 %         % Plotting results
 %         subplot(length(stims), 1, s)

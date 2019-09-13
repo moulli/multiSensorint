@@ -34,7 +34,7 @@ function plotAveragedResponse(app)
     indexes = indexes(:, all(indexes > 0));
     mstim = mean(stim(indexes), 2);
     averaged(1).stimulus = mstim; % to be saved in workspace
-    mstim = mstim - mean(mstim); mstim = mstim ./ std(mstim);
+%     mstim = mstim - mean(mstim); mstim = mstim ./ std(mstim);
     % Average dff for selected points:
     mdff = zeros(period+delay+1, 0);
     for i = 1:length(obj1)
@@ -51,9 +51,13 @@ function plotAveragedResponse(app)
         end
         app.ProgressEditField.Value = round(10000*i/(length(obj1)+length(obj2))) / 100;
     end
+    % Set all first values to 0, for better average
+    mdff = mdff - mdff(1, :);
     averaged(1).dff = mdff; % to be saved in workspace
     mdff = mean(mdff, 2);
-    mdff = mdff - mean(mdff); mdff = mdff ./ std(mdff);
+%     mdff = mdff - mean(mdff); mdff = mdff ./ std(mdff);
+    mstim = (mstim - min(mstim)) / (max(mstim) - min(mstim));
+    mstim = mstim * (max(mdff) - min(mdff)) + min(mdff);
     % Plotting:
     figure
     subplot(2, 1, 1)
@@ -61,7 +65,7 @@ function plotAveragedResponse(app)
     plot(0:time:(time*(length(mstim)-1)), mstim)
     plot(0:time:(time*(length(mdff)-1)), mdff)
     legend('Stimulus', 'Averaged signal')
-    title('Averaged response for stimulus 1 within given radius', 'Interpreter', 'latex')
+    title('Averaged response for stimulus 1 within given radius, and normalized stimulus', 'Interpreter', 'latex')
     xlabel('Time [s]', 'Interpreter', 'latex')
     grid on
     
@@ -92,7 +96,7 @@ function plotAveragedResponse(app)
     indexes = indexes(:, all(indexes > 0));
     mstim = mean(stim(indexes), 2);
     averaged(2).stimulus = mstim; % to be saved in workspace
-    mstim = mstim - mean(mstim); mstim = mstim ./ std(mstim);
+%     mstim = mstim - mean(mstim); mstim = mstim ./ std(mstim);
     % Average dff for selected points:
     mdff = zeros(period+delay+1, 0);
     for i = 1:length(obj2)
@@ -109,16 +113,20 @@ function plotAveragedResponse(app)
         end
         app.ProgressEditField.Value = round(10000*(length(obj1)+i)/(length(obj1)+length(obj2))) / 100;
     end
+    % Set all first values to 0, for better average
+    mdff = mdff - mdff(1, :);
     averaged(2).dff = mdff; % to be saved in workspace
     mdff = mean(mdff, 2);
-    mdff = mdff - mean(mdff); mdff = mdff ./ std(mdff);
+%     mdff = mdff - mean(mdff); mdff = mdff ./ std(mdff);
+    mstim = (mstim - min(mstim)) / (max(mstim) - min(mstim));
+    mstim = mstim * (max(mdff) - min(mdff)) + min(mdff);
     % Plotting:
     subplot(2, 1, 2)
     hold on
     plot(0:time:(time*(length(mstim)-1)), mstim)
     plot(0:time:(time*(length(mdff)-1)), mdff)
     legend('Stimulus', 'Averaged signal')
-    title('Averaged response for stimulus 2 within given radius', 'Interpreter', 'latex')
+    title('Averaged response for stimulus 2 within given radius, and normalized stimulus', 'Interpreter', 'latex')
     xlabel('Time [s]', 'Interpreter', 'latex')
     grid on
     

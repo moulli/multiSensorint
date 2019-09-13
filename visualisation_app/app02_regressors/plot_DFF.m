@@ -29,7 +29,9 @@ function plot_DFF(app)
         stim = h5read(ptemp, fullfile(app.epath1{j, 1}, app.epath1{j, 2}));
         times = h5read(ptemp, '/Data/Brain/Times');
         % Normalizing:
-        stim = stim / std(stim(~isnan(stim))) * std(dff(~isnan(dff)));
+%         stim = stim / std(stim(~isnan(stim))) * std(dff(~isnan(dff)));
+        stim = (stim - min(stim)) / (max(stim) - min(stim));
+        stim = stim * (max(dff) - min(dff)) + min(dff);
         % Plotting:
         try
             plot(app.UIAxes3, times, stim)
@@ -38,7 +40,7 @@ function plot_DFF(app)
         end
         hold(app.UIAxes3, 'on')
         plot(app.UIAxes3, times, dff)
-        title(app.UIAxes3, 'Stimulus (blue) and DFF(red) against time for set 1')
+        title(app.UIAxes3, 'Normalized stimulus (blue) and DFF(red) against time for set 1')
         xlabel(app.UIAxes3, 'Times [s]', 'Interpreter', 'latex')
         ylabel(app.UIAxes3, 'Stimulus and DFF', 'Interpreter', 'latex')
         app.UIAxes3.XGrid = 'on';
@@ -65,7 +67,9 @@ function plot_DFF(app)
         stim = h5read(ptemp, fullfile(app.epath2{j, 1}, app.epath2{j, 2}));
         times = h5read(ptemp, '/Data/Brain/Times');
         % Normalizing:
-        stim = stim / std(stim(~isnan(stim))) * std(dff(~isnan(dff)));
+%         stim = stim / std(stim(~isnan(stim))) * std(dff(~isnan(dff)));
+        stim = (stim - min(stim)) / (max(stim) - min(stim));
+        stim = stim * (max(dff) - min(dff)) + min(dff);
         % Plotting:
         try
             plot(app.UIAxes4, times, stim)
@@ -74,7 +78,7 @@ function plot_DFF(app)
         end
         hold(app.UIAxes4, 'on')
         plot(app.UIAxes4, times, dff)
-        title(app.UIAxes4, 'Stimulus (blue) and DFF(red) against time for set 2')
+        title(app.UIAxes4, 'Normalized stimulus (blue) and DFF(red) against time for set 2')
         xlabel(app.UIAxes4, 'Times [s]', 'Interpreter', 'latex')
         ylabel(app.UIAxes4, 'Stimulus and DFF', 'Interpreter', 'latex')
         app.UIAxes4.XGrid = 'on';
