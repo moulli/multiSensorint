@@ -24,7 +24,7 @@ end
 % the perc% with the highest F-statistic and with at least one regressor
 % coefficient belonging to the higher absolute perc%
 
-perc = 0.05;
+perc = 0.025;
 stims = {'auditory'; 'sine'; 'hot'; 'cold'};
 neukeep = cell(length(stims), 1);
 for i = 1:length(stims)
@@ -342,7 +342,7 @@ sizes = [2, 6, 10, 15, 23];
 
 % Just specific layers 
 figure
-title('Neurons with highest F-statistic and highest coefficients for different stimuli, z = 0.193mm', ...
+title('Neurons with highest F-statistic and highest coefficients for different stimuli, z = 0.218mm', ...
        'Interpreter', 'latex')
 xlabel('x-axis', 'Interpreter', 'latex')
 ylabel('y-axis', 'Interpreter', 'latex')
@@ -351,7 +351,7 @@ axis equal
 hold on
 for i = length(nneukeep):-1:1
     coordi = ind2coord(zgrid005reg, nneukeep{i});
-    zlayer = 0.193;
+    zlayer = 0.218;
     coordi = coordi(zlayer <= coordi(:, 3) & coordi(:, 3) < zlayer+0.005, :);
     scatter(coordi(:, 1), coordi(:, 2), sizes(i), colours(i, :), 'filled')
 end
@@ -360,7 +360,7 @@ legend([flip(nstims); 'Whole brain outline'])
 view(-90, 90)
 
 figure
-title('Neurons with highest F-statistic and highest coefficients for different stimuli, z = 0.158mm', ...
+title('Neurons with highest F-statistic and highest coefficients for different stimuli, z = 0.213mm', ...
        'Interpreter', 'latex')
 xlabel('x-axis', 'Interpreter', 'latex')
 ylabel('y-axis', 'Interpreter', 'latex')
@@ -369,7 +369,7 @@ axis equal
 hold on
 for i = length(nneukeep):-1:1
     coordi = ind2coord(zgrid005reg, nneukeep{i});
-    zlayer = 0.158;
+    zlayer = 0.213;
     coordi = coordi(zlayer <= coordi(:, 3) & coordi(:, 3) < zlayer+0.005, :);
     scatter(coordi(:, 1), coordi(:, 2), sizes(i), colours(i, :), 'filled')
 end
@@ -378,7 +378,7 @@ legend([flip(nstims); 'Whole brain outline'])
 view(-90, 90)
 
 figure
-title('Neurons with highest F-statistic and highest coefficients for different stimuli, z = 0.158mm', ...
+title('Neurons with highest F-statistic and highest coefficients for different stimuli, z = 0.203mm', ...
        'Interpreter', 'latex')
 xlabel('x-axis', 'Interpreter', 'latex')
 ylabel('y-axis', 'Interpreter', 'latex')
@@ -387,7 +387,61 @@ axis equal
 hold on
 for i = length(nneukeep):-1:1
     coordi = ind2coord(zgrid005reg, nneukeep{i});
-    zlayer = 0.158;
+    zlayer = 0.203;
+    coordi = coordi(zlayer <= coordi(:, 3) & coordi(:, 3) < zlayer+0.005, :);
+    scatter(coordi(:, 1), coordi(:, 2), sizes(i), colours(i, :), 'filled')
+end
+zcontour(zgridtot)
+legend([flip(nstims); 'Whole brain outline'])
+view(-90, 90)
+
+figure
+title('Neurons with highest F-statistic and highest coefficients for different stimuli, z = 0.198mm', ...
+       'Interpreter', 'latex')
+xlabel('x-axis', 'Interpreter', 'latex')
+ylabel('y-axis', 'Interpreter', 'latex')
+zlabel('z-axis', 'Interpreter', 'latex')
+axis equal
+hold on
+for i = length(nneukeep):-1:1
+    coordi = ind2coord(zgrid005reg, nneukeep{i});
+    zlayer = 0.198;
+    coordi = coordi(zlayer <= coordi(:, 3) & coordi(:, 3) < zlayer+0.005, :);
+    scatter(coordi(:, 1), coordi(:, 2), sizes(i), colours(i, :), 'filled')
+end
+zcontour(zgridtot)
+legend([flip(nstims); 'Whole brain outline'])
+view(-90, 90)
+
+figure
+title('Neurons with highest F-statistic and highest coefficients for different stimuli, z = 0.153mm', ...
+       'Interpreter', 'latex')
+xlabel('x-axis', 'Interpreter', 'latex')
+ylabel('y-axis', 'Interpreter', 'latex')
+zlabel('z-axis', 'Interpreter', 'latex')
+axis equal
+hold on
+for i = length(nneukeep):-1:1
+    coordi = ind2coord(zgrid005reg, nneukeep{i});
+    zlayer = 0.153;
+    coordi = coordi(zlayer <= coordi(:, 3) & coordi(:, 3) < zlayer+0.005, :);
+    scatter(coordi(:, 1), coordi(:, 2), sizes(i), colours(i, :), 'filled')
+end
+zcontour(zgridtot)
+legend([flip(nstims); 'Whole brain outline'])
+view(-90, 90)
+
+figure
+title('Neurons with highest F-statistic and highest coefficients for different stimuli, z = 0.148mm', ...
+       'Interpreter', 'latex')
+xlabel('x-axis', 'Interpreter', 'latex')
+ylabel('y-axis', 'Interpreter', 'latex')
+zlabel('z-axis', 'Interpreter', 'latex')
+axis equal
+hold on
+for i = length(nneukeep):-1:1
+    coordi = ind2coord(zgrid005reg, nneukeep{i});
+    zlayer = 0.148;
     coordi = coordi(zlayer <= coordi(:, 3) & coordi(:, 3) < zlayer+0.005, :);
     scatter(coordi(:, 1), coordi(:, 2), sizes(i), colours(i, :), 'filled')
 end

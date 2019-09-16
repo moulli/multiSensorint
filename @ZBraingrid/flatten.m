@@ -61,7 +61,7 @@ function onew = flatten(obj, opt_comment)
     onew.Znumber = Znumber_grid(onew.Zindex);
     % New technique: averaging only across responsive neurons
     Ztot_divide = Zcorrel_grid;
-    Ztot_divide(Ztot_divide > 0) = 1;
+    Ztot_divide(Ztot_divide ~= 0) = 1;
     Ztot_divide = sum(Ztot_divide, 4);
     Ztot_divide(Ztot_divide == 0) = 1;
     Zcorrel_grid = sum(Zcorrel_grid, 4) ./ Ztot_divide;
