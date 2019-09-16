@@ -54,9 +54,17 @@ function onew = flatten(obj, opt_comment)
     %% Computing Zindex, Znumber and Zcorrel:
     
     Znumber_grid = sum(Znumber_grid, 4);
-    Zcorrel_grid = mean(Zcorrel_grid, 4);
+%     % Old technique: just averaging whole vector even if lots of neurons
+%     % not responding are set to be 0
+%     Zcorrel_grid = mean(Zcorrel_grid, 4);
     onew.Zindex = find(Znumber_grid ~= 0);
     onew.Znumber = Znumber_grid(onew.Zindex);
+    % New technique: averaging only across responsive neurons
+    Ztot_divide = Zcorrel_grid;
+    Ztot_divide(Ztot_divide > 0) = 1;
+    Ztot_divide = sum(Ztot_divide, 4);
+    Ztot_divide(Ztot_divide == 0) = 1;
+    Zcorrel_grid = sum(Zcorrel_grid, 4) ./ Ztot_divide;
     onew.Zcorrel = Zcorrel_grid(onew.Zindex);  
     
     

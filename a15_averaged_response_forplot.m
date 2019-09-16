@@ -75,6 +75,7 @@ for pt = 1:size(selpoint, 1)
             objtemp = obj(i);
             coord = get3Dcoord(objtemp);
             indf = (sum((coord - selpoint(pt, :)).^2, 2) < 0.005^2);
+%             disp([pt, s]), disp(objtemp.Zcorrel(indf))
             if isempty(indf)
                 continue
             end
@@ -91,7 +92,7 @@ for pt = 1:size(selpoint, 1)
         end
         mdff = mdff - mdff(1, :);
         meanvals{s, 2, pt} = mdff;
-        mdff = mdff - mean(mdff);
+%         mdff = mdff - mean(mdff);
         meanmdff = mean(mdff, 2);
     %     mdff = mdff - mean(meanmdff); mdff = mdff ./ std(meanmdff);
     %     meanmdff = meanmdff - mean(meanmdff); meanmdff = meanmdff ./ std(meanmdff);
@@ -170,7 +171,51 @@ for s = 1:length(stims)
         axis([0, (time*(lenstim-1)), axesxy(s, 2), axesxy(s, 1)])
     end
 end
-    
+
+
+
+%% Compute percentile for all points and all stimuli
+
+actperc = zeros(length(stims), size(selpoint, 1));
+
+for s = 1:length(stims)
+    ztemp = flatten(subset(zfinal, stims{s}));
+
+    for pt = 1:size(selpoint, 1)
+        indtemp = ZBGsub2ind(ztemp, selpoint(pt, :));
+        indfstat = find(ztemp.Zindex == indtemp);
+        if isempty(indfstat)
+            actperc(s, pt) = -1;
+        else
+            actperc(s, pt) = sum(ztemp.Zcorrel >= ztemp.Zcorrel(indfstat)) / length(ztemp.Zcorrel);
+        end
+    end
+end
+
+
+%% Test
+
+ztemp = subset(zfinal, 'cold');
+
+indtest = indtemp;
+
+zflat = flatten(ztemp);
+
+correls = cell(2, 1);
+numbers = cell(2, 1);
+correls{1} = zflat.Zcorrel(zflat.Zindex == indtest);
+numbers{1} = zflat.Znumber(zflat.Zindex == indtest);
+correlstemp = zeros(1, length(ztemp));
+numberstemp = zeros(1, length(ztemp));
+for i = 1:length(ztemp)
+    ztemptemp = ztemp(i);
+    if ~isempty(find(ztemptemp.Zindex == indtest))
+        correlstemp(i) = ztemptemp.Zcorrel(ztemptemp.Zindex == indtest);
+        numberstemp(i) = ztemptemp.Znumber(ztemptemp.Zindex == indtest);
+    end
+end
+correls{2} = correlstemp;
+numbers{2} = numberstemp;
 
 
 
