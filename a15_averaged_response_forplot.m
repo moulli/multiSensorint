@@ -22,9 +22,14 @@ stimpaths = {'/Data/Stimulus/auditory1/acousticPulse'; '/Data/Stimulus/vestibula
          
 %% Entering point coordinates
 
-selpoint = [0.2781, 0.7188, 0.148;
+selpoint_v4 = [0.2781, 0.7188, 0.148;
             0.2179, 0.7238, 0.158;
             0.1828, 0.5435, 0.193];
+selpoint_v5 = [0.278, 0.719, 0.148;
+            0.168, 0.448, 0.203;
+            0.208, 0.413, 0.218];
+        
+selpoint = selpoint_v4;
 
 
 %% Compute averaged answer for each stimulus
@@ -174,13 +179,20 @@ end
 
 
 
-%% Compute percentile for all points and all stimuli
+%% Compute number of neurons, and percentile for all points and all stimuli
+
+numneu = zeros(length(stims), size(selpoint, 1));
+for s = 1:length(stims)
+    for pt = 1:size(selpoint, 1)
+        numneu(s, pt) = size(meanvals{s, 2, pt}, 2);
+    end
+end
+fprintf('Number of neurons for all signals \n');
+disp(numneu)
 
 actperc = zeros(length(stims), size(selpoint, 1));
-
 for s = 1:length(stims)
     ztemp = flatten(subset(zfinal, stims{s}));
-
     for pt = 1:size(selpoint, 1)
         indtemp = ZBGsub2ind(ztemp, selpoint(pt, :));
         indfstat = find(ztemp.Zindex == indtemp);
@@ -191,6 +203,8 @@ for s = 1:length(stims)
         end
     end
 end
+fprintf('Percentile for all signals \n');
+disp(actperc)
 
 
 %% Test

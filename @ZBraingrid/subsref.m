@@ -19,6 +19,7 @@ function onew = subsref(obj, Sin)
             onew.paths = builtin('subsref', obj.paths, Sin(1));
             onew.comments = builtin('subsref', obj.comments, Sin(1));
             substemp = Sin(1).subs{1};
+            substemp = reshape(substemp, 1, length(substemp));
             onew.gridsize(4) = length(substemp);
             % Finding indexes of what to keep:
             vsize = prod(obj.gridsize(1:3));
