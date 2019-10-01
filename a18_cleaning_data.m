@@ -324,7 +324,7 @@ for i = 1:length(limits)
     plot([limits(1), limits(end)] - 0.5, [limits(i), limits(i)] - 0.5, 'w');
     plot([limits(i), limits(i)] - 0.5, [limits(1), limits(end)] - 0.5, 'w');
 end
-title('p-values for Kolmogorov-Smirnov test on brain regions distributions for all datasets', 'Interpreter', 'latex')
+title('p-values for Kolmogorov-Smirnov test on brain regions distributions for all datasets after cleaning', 'Interpreter', 'latex')
 axis([limits(1)-0.5, limits(end)-0.5, limits(1)-0.5, limits(end)-0.5])
 xticks(limits)
 xticklabels(labels)
@@ -335,7 +335,7 @@ for i = 1:length(KSreg_new)
 end
 figure
 boxplot(KSdata_new(:, 1), KSdata_new(:, 2), 'OutlierSize', 0.1, 'Symbol', '.k', 'Jitter', 0.5);
-title('Boxplot of Kolmogorov test p-value for different stimuli', 'Interpreter', 'latex')
+title('Boxplot of Kolmogorov test p-value for different stimuli after cleaning', 'Interpreter', 'latex')
 xticklabels(labels)
 grid on
 
@@ -347,19 +347,25 @@ colours = [1, 0, 1;
            0, 0, 0;
            0.7, 0.7, 0.7;
            0.7, 0.4, 0];
-% Same plot*
+% Same plot
 figure
 hold on
 for i = 1:length(regtot)
     for j = 1:size(regtot{i}, 1)
         plot(cumsum(regtot{i}(j, :))/sum(regtot{i}(j, :)), 'Color', colours(i, :))
         if ~regkeep{i}(j)
-            plot(cumsum(regtot{i}(j, :))/sum(regtot{i}(j, :)), 'r-.')
+            plot(cumsum(regtot{i}(j, :))/sum(regtot{i}(j, :)), 'r--')
         end
     end
+    % Mean before cleaning
     regmean = mean(regtot{i}, 1);
-    plot(cumsum(regmean)/sum(regmean), 'Color', colours(i, :), 'LineWidth', 9)
+    plot(cumsum(regmean)/sum(regmean), ':', 'Color', colours(i, :), 'LineWidth', 6)
+    % Mean after cleaning
+    regmean_after = mean(regtot{i}(regkeep{i}, :), 1);
+    plot(cumsum(regmean_after)/sum(regmean_after), 'Color', colours(i, :), 'LineWidth', 6)
 end
+title('Cumulative regions distributions for all datasets (removed are dotted red)', 'Interpreter', 'latex')
+xlabel('Region number', 'Interpreter', 'latex')
 % Different subplots
 figure
 for i = 1:length(regtot)
@@ -368,11 +374,16 @@ for i = 1:length(regtot)
         if regkeep{i}(j)
             plot(cumsum(regtot{i}(j, :))/sum(regtot{i}(j, :)), 'Color', colours(i, :))
         else
-            plot(cumsum(regtot{i}(j, :))/sum(regtot{i}(j, :)), 'r-.')
+            plot(cumsum(regtot{i}(j, :))/sum(regtot{i}(j, :)), 'Color', colours(i, :))
+            plot(cumsum(regtot{i}(j, :))/sum(regtot{i}(j, :)), 'r--')
         end
     end
+    % Mean before cleaning
     regmean = mean(regtot{i}, 1);
-    plot(cumsum(regmean)/sum(regmean), 'Color', colours(i, :), 'LineWidth', 9)
+    plot(cumsum(regmean)/sum(regmean), ':', 'Color', colours(i, :), 'LineWidth', 6)
+    % Mean after cleaning
+    regmean_after = mean(regtot{i}(regkeep{i}, :), 1);
+    plot(cumsum(regmean_after)/sum(regmean_after), 'Color', colours(i, :), 'LineWidth', 6)
 end
 
 
@@ -433,11 +444,11 @@ for i = 1:length(zbg005)
         plot(simplhist(i, :), 'Color', [0.7, 0.4, 0])
     end
     if ~any(zbg005(i).names == zfclean005.names)
-        plot(simplhist(i, :), 'r-.')
+        plot(simplhist(i, :), 'r--')
     end
 end
 grid on
-title('Repartition histogram for F-statistic distribution across 64 datasets, and averaged distributions per stimulus', 'Interpreter', 'latex')
+title('Repartition histogram for F-statistic distribution across all datasets, and averaged distributions per stimulus', 'Interpreter', 'latex')
 ylabel('Proportion of F-statistics associated to interval', 'Interpreter', 'latex')
 xlabel('Interval for F-statistics', 'Interpreter', 'latex')
 xticks(1:length(bornes))
@@ -485,7 +496,7 @@ colours = [1, 0, 1;
            0.7, 0.7, 0.7;
            0.7, 0.4, 0];
 for i = 1:size(simplhist2, 1)
-    plot(simplhist2(i, :), ':', 'Color', colours(i, :), 'LineWidth', 9)
+    plot(simplhist2(i, :), ':', 'Color', colours(i, :), 'LineWidth', 6)
 end
 
 
@@ -537,7 +548,7 @@ colours = [1, 0, 1;
            0.7, 0.7, 0.7;
            0.7, 0.4, 0];
 for i = 1:size(simplhist2, 1)
-    plot(simplhist2(i, :), 'Color', colours(i, :), 'LineWidth', 9)
+    plot(simplhist2(i, :), 'Color', colours(i, :), 'LineWidth', 6)
 end
 
 

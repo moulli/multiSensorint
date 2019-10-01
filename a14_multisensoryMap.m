@@ -13,10 +13,12 @@ if exist('C:/Users/Hippolyte Moulle', 'dir')
     load('C:/Users/Hippolyte Moulle/Documents/LJP_datasets/Multisensory dataset/z5msg.mat');
 elseif exist('/home/ljp/Science/Hippolyte', 'dir')
     addpath(genpath('/home/ljp/Science/Hippolyte/multiSensorint'))
-    load('/home/ljp/Science/Hippolyte/zgrid005reg.mat');
+    load('/home/ljp/Science/Hippolyte/ZBG_old/zgrid005reg.mat');
     load('/home/ljp/Science/Hippolyte/multiSensorint/visualisation_app/app02_regressors/zoutlines005.mat'); % careful, uncomplete zoutlines
-    load('/home/ljp/Science/Hippolyte/z5msg.mat');
+    load('/home/ljp/Science/Hippolyte/ZBG_old/z5msg.mat');
 end
+% load('/home/ljp/Science/Hippolyte/zfclean005.mat', 'zfclean005')
+% zgrid005reg = zfclean005;
 
 
 %% Algorithm to keep neurons per stimulus
@@ -24,7 +26,7 @@ end
 % the perc% with the highest F-statistic and with at least one regressor
 % coefficient belonging to the higher absolute perc%
 
-perc = 0.025;
+perc = 0.25;
 stims = {'auditory'; 'sine'; 'hot'; 'cold'};
 neukeep = cell(length(stims), 1);
 for i = 1:length(stims)
@@ -141,7 +143,7 @@ for i = 2:4
     elseif i == 3
         mkrsize = 5;
         colcom = [0.6, 0.6, 0.6];
-    else
+    elseif i > 3
         mkrsize = 10;
         colcom = [0, 0, 0];
     end
@@ -310,7 +312,11 @@ zlabel('z-axis', 'Interpreter', 'latex')
 axis equal
 hold on
 zcontour(zgridtot)
-regions_to_plot = {'Habenula'; 'Cerebellum'; 'Tegmentum'; 'Torus Semicircularis'; 'NucMLF'; 'Inferior Olive'; 'Oculomotor Nucleus'; 'Medial_octavolateral_nucleus'};
+if exist('C:/Users/Hippolyte Moulle', 'dir')
+	regions_to_plot = {'Habenula'; 'Cerebellum'; 'Tegmentum'; 'Torus Semicircularis'; 'NucMLF'; 'Inferior Olive'; 'Oculomotor Nucleus'; 'Medial_octavolateral_nucleus'};
+else
+    regions_to_plot = {'Cerebellum'; 'Tegmentum'; 'Torus Semicircularis'; 'NucMLF'; 'Inferior Olive'; 'Oculomotor Nucleus'; 'Medial_octavolateral_nucleus'};
+end
 regions_colours = rand(length(regions_to_plot), 3);
 for i = 1:length(regions_to_plot)
     zcontour(flatten(subset(zoutlines005, regions_to_plot{i})), [], regions_colours(i, :))
