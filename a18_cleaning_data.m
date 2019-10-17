@@ -246,7 +246,7 @@ figure
 boxplot(KSdata(:, 1), KSdata(:, 2), 'OutlierSize', 0.1, 'Symbol', '.k', 'Jitter', 0.5);
 title('Boxplot of Kolmogorov test p-value for different stimuli', 'Interpreter', 'latex')
 xticklabels(labels)
-grid on
+% grid on
 
 
 %% Deleting bad example:
@@ -337,7 +337,7 @@ figure
 boxplot(KSdata_new(:, 1), KSdata_new(:, 2), 'OutlierSize', 0.1, 'Symbol', '.k', 'Jitter', 0.5);
 title('Boxplot of Kolmogorov test p-value for different stimuli after cleaning', 'Interpreter', 'latex')
 xticklabels(labels)
-grid on
+% grid on
 
 
 %% Plotting without bad datasets
@@ -351,12 +351,12 @@ colours = [1, 0, 1;
 figure
 hold on
 for i = 1:length(regtot)
-    for j = 1:size(regtot{i}, 1)
-        plot(cumsum(regtot{i}(j, :))/sum(regtot{i}(j, :)), 'Color', colours(i, :))
-        if ~regkeep{i}(j)
-            plot(cumsum(regtot{i}(j, :))/sum(regtot{i}(j, :)), 'r--')
-        end
-    end
+%     for j = 1:size(regtot{i}, 1)
+%         plot(cumsum(regtot{i}(j, :))/sum(regtot{i}(j, :)), 'Color', colours(i, :))
+%         if ~regkeep{i}(j)
+%             plot(cumsum(regtot{i}(j, :))/sum(regtot{i}(j, :)), 'r--')
+%         end
+%     end
     % Mean before cleaning
     regmean = mean(regtot{i}, 1);
     plot(cumsum(regmean)/sum(regmean), ':', 'Color', colours(i, :), 'LineWidth', 6)
@@ -447,7 +447,7 @@ for i = 1:length(zbg005)
         plot(simplhist(i, :), 'r--')
     end
 end
-grid on
+% grid on
 title('Repartition histogram for F-statistic distribution across all datasets, and averaged distributions per stimulus', 'Interpreter', 'latex')
 ylabel('Proportion of F-statistics associated to interval', 'Interpreter', 'latex')
 xlabel('Interval for F-statistics', 'Interpreter', 'latex')

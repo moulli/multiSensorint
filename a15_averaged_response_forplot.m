@@ -5,8 +5,8 @@ addpath(genpath('/home/ljp/Science/Hippolyte'))
 %% Import ZBG objects and build final ZBG
 
 % Build ZBG with F-statistics
-load('/home/ljp/Science/Hippolyte/zgrid005reg.mat')
-load('/home/ljp/Science/Hippolyte/z5msg.mat')
+load('/home/ljp/Science/Hippolyte/ZBG_old/zgrid005reg.mat')
+load('/home/ljp/Science/Hippolyte/ZBG_old/z5msg.mat')
 zfinal = subset(zgrid005reg + subset(z5msg, '3rd'), 'F-statistic');
 % % Get rid of certain datasets
 % ridof = [6, 63];

@@ -107,3 +107,26 @@ for i = 3:5
     scatter3(coordi(:, 1), coordi(:, 2), coordi(:, 3), mkrsize, colcom, 'filled')
 end
 legend('3 stimuli', '4 stimuli', '5 stimuli')
+
+
+%% Plot with stimulus colour
+
+% Define colours
+colours = [1, 0, 1; 
+           0, 1, 0;
+           0, 0, 0;
+           0.75, 0.75, 0.75
+           0.75, 0.5, 0];
+% Define sizes
+sizes = [10, 20, 40, 60, 100];
+       
+% Plot with right colour
+figure
+hold on
+for i = fliplr(1:length(stims))
+    indkeep = any(neukeep{i} == totneu', 2);
+    indkeep = neukeep{i}(indkeep);
+    coordi = ind2coord(zgrid005reg, indkeep);
+    scatter3(coordi(:, 1), coordi(:, 2), coordi(:, 3), sizes(i), colours(i, :), 'filled')
+end
+axis equal

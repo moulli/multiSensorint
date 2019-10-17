@@ -230,7 +230,6 @@ for i = 1:size(Fstats, 1)
         plot(simplhist(i, :), 'Color', [0.7, 0.4, 0])
     end
 end
-grid on
 title('Repartition histogram for F-statistic distribution across 64 datasets, and averaged distributions per stimulus', 'Interpreter', 'latex')
 ylabel('Proportion of F-statistics associated to interval', 'Interpreter', 'latex')
 xlabel('Interval for F-statistics', 'Interpreter', 'latex')
@@ -280,4 +279,38 @@ colours = [1, 0, 1;
            0.7, 0.4, 0];
 for i = 1:size(simplhist2, 1)
     plot(simplhist2(i, :), 'Color', colours(i, :), 'LineWidth', 9)
+end
+
+
+
+%% Plot cumulative distributions
+
+figure
+hold on
+for i = 1:size(Fstats, 1)
+    if isequal(modality{i}, "auditory")
+        plot(cumsum(simplhist(i, :)), 'Color', [1, 0, 1])
+    elseif isequal(modality{i}, "sine")
+        plot(cumsum(simplhist(i, :)), 'Color', [0, 1, 0])
+    elseif isequal(modality{i}, "hot")
+        plot(cumsum(simplhist(i, :)), 'Color', [0, 0, 0])
+    elseif isequal(modality{i}, "cold")
+        plot(cumsum(simplhist(i, :)), 'Color', [0.7, 0.7, 0.7])
+    elseif isequal(modality{i}, "visual")
+        plot(cumsum(simplhist(i, :)), 'Color', [0.7, 0.4, 0])
+    end
+end
+title('Cumulative repartition histogram for F-statistic distribution across 64 datasets, and averaged distributions per stimulus', 'Interpreter', 'latex')
+ylabel('Proportion of F-statistics lying under interval', 'Interpreter', 'latex')
+xlabel('Interval for F-statistics', 'Interpreter', 'latex')
+xticks(1:length(bornes))
+xlabelz = cell(1, length(bornes));
+for i = 1:(length(bornes)-1)
+    xlabelz{i} = strcat("[", num2str(bornes(i)), ":", num2str(bornes(i+1)), "]");
+end
+xlabelz{length(bornes)} = strcat("[", num2str(bornes(end)), ":infinity]");
+xticklabels(xlabelz);
+
+for i = 1:size(simplhist2, 1)
+    plot(cumsum(simplhist2(i, :)), 'Color', colours(i, :), 'LineWidth', 9)
 end

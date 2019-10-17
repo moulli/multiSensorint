@@ -26,7 +26,7 @@ end
 % the perc% with the highest F-statistic and with at least one regressor
 % coefficient belonging to the higher absolute perc%
 
-perc = 0.25;
+perc = 0.05;
 stims = {'auditory'; 'sine'; 'hot'; 'cold'};
 neukeep = cell(length(stims), 1);
 for i = 1:length(stims)
@@ -455,6 +455,50 @@ zcontour(zgridtot)
 legend([flip(nstims); 'Whole brain outline'])
 view(-90, 90)
 
+
+
+%% Figure 4
+
+% Create grid to analyse:
+ztemp = subset(zgrid005reg, 'auditory');
+obj = flatten(subset(ztemp, 'F-stat'));
+obj = gaussianize(obj, 0.01);
+x = (obj.xgrid(2:end) + obj.xgrid(1:end-1)) / 2;
+y = (obj.ygrid(2:end) + obj.ygrid(1:end-1)) / 2;
+z = (obj.zgrid(2:end) + obj.zgrid(1:end-1)) / 2;
+[X, Y, Z] = meshgrid(y, x, z);
+val = zeros(size(X));
+val(neukeep{1}) = 1;
+
+figure
+hold on
+view(-90, 0)
+surf1 = isosurface(Y, X, Z, val, 0.5);
+p1 = patch(surf1);
+isonormals(X, Y, Z, val, p1);
+set(p1, 'FaceColor', 'red', 'EdgeColor', 'none', 'FaceAlpha', 0.6); % set the color, mesh and transparency level of the surface
+camlight(); 
+% % Second isosurface:
+% surf2 = isosurface(Y, X, Z, val, app.isoval2);
+% p2 = patch(surf2);
+% isonormals(X, Y, Z, val, p2);
+% set(p2, 'FaceColor', 'red', 'EdgeColor', 'none', 'FaceAlpha', 0.25);
+% % Third isosurface:
+% surf3 = isosurface(Y, X, Z, val, app.isoval3);
+% p3 = patch(surf3);
+% isonormals(X, Y, Z, val, p3);
+% set(p3, 'FaceColor', 'red', 'EdgeColor', 'none', 'FaceAlpha', 0.08);
+axis equal
+% for i = 1:size(app.OutplotC, 1)
+%     for k = 1:length(app.OutplotC{i, 1})
+%         plot3(app.OutplotC{i, 1}{k}(:, 1), app.OutplotC{i, 1}{k}(:, 2), app.OutplotC{i, 1}{k}(:, 3), 'Color', [0.6, 0.6, 0.6], 'LineWidth', 1)
+%     end
+% end
+for i = 1:size(app.OutplotC, 1)
+    for k = 1:length(app.OutplotC{i, 2})
+        plot3(app.OutplotC{i, 2}{k}(:, 1), app.OutplotC{i, 2}{k}(:, 2), app.OutplotC{i, 2}{k}(:, 3), 'Color', [0.6, 0.6, 0.6], 'LineWidth', 1)
+    end
+end
 
 
 
