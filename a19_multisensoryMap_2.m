@@ -28,7 +28,7 @@ zgrid005reg = zgrid005reg + z5msg;
 % the perc% with the highest F-statistic and with at least one regressor
 % coefficient belonging to the higher absolute perc%
 
-perc = 0.1;
+perc = 0.025;
 stims = {'auditory'; 'sine'; 'hot'; 'cold'; '3rd'};
 neukeep = cell(length(stims), 1);
 for i = 1:length(stims)
